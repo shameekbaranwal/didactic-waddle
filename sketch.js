@@ -396,7 +396,7 @@ function gameOver() {
 	textSize(70);
 	text(
 	`You lost.
-	PRESS R TO RESTART!`, width / 2, height / 2);
+	PRESS r TO RESTART!`, width / 2, height / 2);
 	pop();
 }
 
