@@ -6,7 +6,7 @@ A simple 2D game project using p5.js framework with a character traversing a two
 
 ![](2021-01-13-03-17-29.png)
 
-The objective of every level is to travel from the first mountain to the second, while collecting as many coins along the way as possible. The player must avoid the hitting the birds or falling into the canyons, as the game will end and he will need to restart.
+The objective of every level is to travel from the first mountain to the second, while collecting as many coins along the way as possible. The player must avoid hitting the birds or falling into the canyons, as the game will end and he will need to restart.
 
 ![](2021-01-13-03-22-05.png)
 

@@ -12,11 +12,13 @@ class Cloud {
     }
 
     show() {
+        push();
         fill(255);
         ellipse(this.x + 20, this.y + 20, 60, 60);
         ellipse(this.x - 20, this.y + 20, 60, 60);
         ellipse(this.x - 40, this.y, 60, 60);
-        ellipse(this.x - 20, this.y - 20, 80, 50);
-        ellipse(this.x + 20, this.y - 20, 80, 60);
+        ellipse(this.x, this.y - 15, 60, 50);
+        // ellipse(this.x + 15, this.y - 15, 80, 60);
+        pop();
     }
 }

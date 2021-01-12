@@ -1,15 +1,11 @@
 /*
 
-The Game Project 4 - Side scrolling
-
-Week 6
+didactic-waddle
 
 */
 
 
-//\\
-//\\I've refactored some things in the code and used more optimised methods, and added 
-//\\comments everywhere I felt necessary. 
+//author - @shameekbaranwal 
 
 
 var gameChar_x;
@@ -22,16 +18,10 @@ var speed;
 var char;
 
 var cloudImg; //to store the cloud image.
-var treeImg; //to store the tree image.
 var coinImgs; //to store the array of six coin images.
-var mountainImg; //to store the mountain image.
 var charImg; //to store the character images, which will depend on direction of movement.
 var charRightImg; //to store the right-facing character image.
 var charLeftImg; //to store the left-facing character image.
-var canyonleftImg; //for canyon's left side's edge.
-var canyonRightImg; //for canyon's right side's edge.
-var birdLeftImgs; //for bird facing left side.
-var birdRightImgs; //for bird facing right side.
 var coinSound; //to store sound upon collecting coins, added p5.sound.js for making it work.
 var trees_x = []; //array to store tree x positions.
 var canyons_x = [];  //array to store canyon x positions.
@@ -56,7 +46,7 @@ function setup()
 {
 	createCanvas(1024, 576); //1024 x 576, 16:9
 	frameRate(60);
-	
+	score = 0;
 	setLevel_1();
 }
 
@@ -168,6 +158,7 @@ functions defined to do things in a more organised way
 
 //function to set the environment for level 1. It is seperated out, so more levels can be added
 //using the youWin() function, by setting new values for all the variables set here.
+
 function setLevel_1() {
 	floorPos_y = height * 3 / 4; //this value will be used throughout the code.
 	gameChar_x = 130;
@@ -182,21 +173,20 @@ function setLevel_1() {
 	charPosition = char.x; //this variable will contain the distance of the character wrt origin, we use this
 	//we use charPosition to keep track of how many pixels character has moved in total.
 	
-	score = 0;
 
 	// Initialise arrays of scenery objects.
 	
-	//\\mountain
+	//mountain
 	mountainStart = new Mountain(gameChar_x);
 	mountainEnd = new Mountain(4400);
 	
-	//\\clouds
+	//clouds
 	cloudsNum = 24; 
 	for (var i = 0; i < cloudsNum; i++) {
-		clouds[i] = new Cloud(100, i); //\\initializing the cloud objects independent of cloudsNum
+		clouds[i] = new Cloud(100, i); //initializing the cloud objects independent of cloudsNum
 	}
 	
-	//\\trees
+	//trees
 	trees_x = [
 		40,
 		300,
@@ -218,7 +208,7 @@ function setLevel_1() {
 		trees[i] = new Tree(trees_x[i], floorPos_y, i);
 	}
 
-	//\\canyon
+	//canyon
 	canyons_x = [
 		412,
 		1550,
@@ -230,7 +220,7 @@ function setLevel_1() {
 		canyons[i] = new Canyon(canyons_x[i], 200);
 	}
 
-	//\\coins
+	//coins
 	{
 	//the coins will be added wrt a coordinate system where origin is at 
 	//the left-most point of floor, and y-axis points up. 
@@ -396,7 +386,7 @@ function gameOver() {
 	textSize(70);
 	text(
 	`You lost.
-	PRESS r TO RESTART!`, width / 2, height / 2);
+	PRESS R TO RESTART!`, width / 2, height / 2);
 	pop();
 }
 
@@ -411,7 +401,7 @@ function showScore() {
 	pop();
 }
 
-//\\ for motion of character in scene 
+//for motion of character in scene 
 function keyPressed()
 {
 
