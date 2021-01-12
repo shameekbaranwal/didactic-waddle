@@ -17,7 +17,7 @@ class Bird {
 
     show() {
        if (frameCount % 10 === 0) //controlling animation speed
-			this.colour = [random(255), random(255), random(255)];
+			this.colour = [random(255), random(255), random(255)]; //random colour every ~6 frames
 		push();
 		fill(200, 100, 100);
 		if (this.waddlespeed >= 0) {

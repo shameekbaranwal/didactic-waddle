@@ -352,14 +352,8 @@ function youWin() {
 	stroke(0);
 	strokeWeight(1);
 	triangle (char.x - 80, floorPos_y, char.x + 80, floorPos_y, char.x, floorPos_y - 100);
-	// ellipse(
 	noLoop();
 	push();
-	// fill(0, 155, 0);
-	// rectMode(CENTER);
-	// stroke(255);
-	// strokeWeight(2);
-	// rect(width/2, height/2 + 35, width, 190);
 	fill(255);
 	strokeWeight(4);
 	textSize(40);
@@ -378,9 +372,6 @@ function gameOver() {
 	stroke(0);
 	strokeWeight(4);
 	translate (-scrollPos, 0);
-	// fill(0, 155, 0);
-	// rectMode(CENTER);
-	// rect(width/2, height/2 + 20, width, 200);
 	textAlign(CENTER);
 	fill(255);
 	textSize(70);
