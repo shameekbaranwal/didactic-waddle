@@ -10,8 +10,10 @@ class Coin {
     show() {
         this.hasBeenCaught();
         if (!this.isFound) {
-            let shrink = ((frameCount/2) % 6) / 6; // for rotating animation.
+            let shrink = ((frameCount / 3) % 6); // for rotating animation.
             push();
+            shrink = min (shrink, abs(6 - shrink)) / 3;
+            // console.log(shrink * 6);
             rectMode(CENTER);
             fill(175, 100, 21); //golden brown
             ellipse(this.x, this.y, 30 * shrink, 30);
