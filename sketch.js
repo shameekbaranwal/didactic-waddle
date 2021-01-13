@@ -176,6 +176,7 @@ function launchScreen() {
 	textSize(30);
 	text("press ENTER to start", width/2, floorPos_y + 50);
 	char.y = floorPos_y;
+	char.isJumping = false;
 	
 	noStroke();
 	push();
@@ -485,6 +486,7 @@ function keyReleased() {
 
 	if (!isLaunched && keyCode === 13) {
 		char.y = floorPos_y - 200;
+		char.isJumping = true;
 		isLaunched = true;
 		scrollPos = 0;
 		textFont('Georgia');
