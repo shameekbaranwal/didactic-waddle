@@ -39,6 +39,8 @@ let score; //to store number of collectibles collected.
 let scrollPos; //to store scrolling distance.
 let endPos; //to store the ending position, where the mountain will be situated.
 let isLaunched; //to store boolean whether game has launched.
+let skyColour; //to store sky (and improvised canyon) colour based on current time.
+let hr;
 
 function preload() {
 	coinSound = loadSound('sfx/coin.wav');
@@ -49,12 +51,16 @@ function setup() {
 	frameRate(60);
 	score = 0;
 	isLaunched = false;
+	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
+	// hr = 12 / 12;
+	skyColour = [100 * hr, 155 * hr, 255 * hr];
 	setLevel_1();
 }
 
 
 function draw() {
-	background(100, 155, 255); // fill the sky blue
+
+	background(skyColour); // fill the sky
 
 	noStroke();
 	fill(0, 155, 0);
@@ -62,8 +68,7 @@ function draw() {
 
 	if (!isLaunched) {
 		launchScreen();
-	} 
-	else {
+	} else {
 
 		scrollPos += speed;
 
@@ -171,27 +176,27 @@ function launchScreen() {
 	textFont('Cascadia');
 	textSize(80);
 	textAlign(CENTER);
-	text("didactic - waddle", width/2, height/2 - 50);
+	text("didactic - waddle", width / 2, height / 2 - 50);
 	textFont('Monospace');
 	textSize(30);
-	text("press ENTER to start", width/2, floorPos_y + 50);
+	text("press ENTER to start", width / 2, floorPos_y + 50);
 	char.y = floorPos_y;
 	char.isJumping = false;
-	
+
 	noStroke();
 	push();
 	translate(scrollPos, 0);
 	for (let i = 0; i < trees_x.length; i++) {
 		trees[i].show();
 	}
-	
+
 	for (let i = 0; i < cloudsNum; i++) {
 		clouds[i].show();
 	}
 	pop();
 
 	char.show();
-	if (-scrollPos >= endPos) 
+	if (-scrollPos >= endPos)
 		scrollPos = 0; //in case you don't start the game till you reach the end of arrays.
 }
 
