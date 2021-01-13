@@ -11,7 +11,7 @@ class Canyon {
 
     show() {
         push();
-        fill(100, 155, 255);
+        fill(skyColour);
         rect(this.x1, floorPos_y, this.w, (height - floorPos_y));
         fill(0, 90, 0);
         triangle(this.x1, floorPos_y, this.x1, height, this.x1 + 1.5 * this.triangleSize, height);
@@ -24,6 +24,6 @@ class Canyon {
 
 
     isInCanyon(charX, charW) {
-        return ((charX >= this.x1) && (charX + charW / 2 <= this.x2));
+        return ((charX >= this.x1) && (charX + charW / 3 <= this.x2));
     }
 }
