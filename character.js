@@ -15,7 +15,7 @@ class Character {
         this.isPlummeting = false;
         this.offSet = 80;
         this.returnSpeed = 0; //\\this value will control the reverse movement of bg items
-        this.right = true;
+        this.movingRight = true;
     }
 
     show() {
@@ -47,7 +47,7 @@ class Character {
             ellipse(this.x + 7.5, this.y - 12, 8, 6); //right foot
         }
         fill(200, 0, 0);
-        if (this.right) {
+        if (this.movingRight) {
             //right facing
             rect(this.x + 15, this.y - 50, 20, 5); //arm from behind
             rect(this.x, this.y - 40, 30, 5); //arm from front
@@ -82,7 +82,7 @@ class Character {
             this.x += 10; //\\ this line is to fix a bug when the character stops moving at the edge
         }
         this.xspeed = 5;
-        this.right = true;
+        this.movingRight = true;
     }
 
     moveLeft() {
@@ -90,7 +90,7 @@ class Character {
             this.x -= 10; //\\ this line is to fix a bug when the character stops moving at the edge
         }
         this.xspeed = -5;
-        this.right = false;
+        this.movingRight = false;
     }
 
     updateX() {
