@@ -40,7 +40,8 @@ let scrollPos; //to store scrolling distance.
 let endPos; //to store the ending position, where the mountain will be situated.
 let isLaunched; //to store boolean whether game has launched.
 let skyColour; //to store sky (and improvised canyon) colour based on current time.
-let hr;
+let hr; //will contain the scale by which sky colour will get adjusted.
+let isMuted;
 
 function preload() {
 	coinSound = loadSound('sfx/coin.wav');
@@ -52,8 +53,8 @@ function setup() {
 	score = 0;
 	isLaunched = false;
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
-	// hr = 12 / 12;
 	skyColour = [100 * hr, 155 * hr, 255 * hr];
+	isMuted = false;
 	setLevel_1();
 }
 
@@ -101,7 +102,8 @@ function draw() {
 			{
 				coins[i].show();
 				if (coins[i].isFound) { //devaring coin from array to improve efficiency.
-					coinSound.play();
+					if (!isMuted)
+						coinSound.play();
 					coins.splice(i, 1);
 					score++;
 				}
@@ -495,6 +497,10 @@ function keyReleased() {
 		isLaunched = true;
 		scrollPos = 0;
 		textFont('Georgia');
+	}
+
+	if (key === 'M') {
+		isMuted = !isMuted;
 	}
 }
 
