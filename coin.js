@@ -27,7 +27,7 @@ class Coin {
 
     hasBeenCaught() {
         if (abs(this.x - charPosition) < char.w / 2 - 10) {
-            if (abs(this.y - char.y) < char.h / 2 + 20 )
+            if (abs(this.y - char.y) < char.h / 2 + 40 )
                 this.isFound = true;
         }
     }
