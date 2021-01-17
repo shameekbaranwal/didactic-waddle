@@ -86,7 +86,7 @@ function setup() {
 	isLaunched = false;
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
 	skyColour = [100 * hr, 155 * hr, 255 * hr];
-	isMuted = true;
+	isMuted = false;
 	setLevel_1();
 }
 
