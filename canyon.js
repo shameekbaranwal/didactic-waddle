@@ -24,6 +24,6 @@ class Canyon {
 
 
     isInCanyon(charX, charW) {
-        return ((charX >= this.x1) && (charX + charW / 3 <= this.x2));
+        return ((charX - charW/2 >= this.x1) && (charX + 10 <= this.x2));
     }
 }
