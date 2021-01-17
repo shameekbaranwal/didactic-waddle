@@ -4,64 +4,90 @@ class Character {
 
     constructor(x, y) {
         this.x = x;
-        this.h = 80; //\\ modify the size of the character here.
-        this.w = this.h //\\ character is in a square box.
+        this.w = 50; //\\ modify the size of the character here.
+        this.h = this.w * 1.5;
         this.y = y - 200; //will be placed 200 pixels higher so character will appear to start game by landing.
         this.xspeed = 0;
         this.yspeed = 0;
-        this.moveOn = true;
+        this.moveOn = false;
         this.gravity = 1; //gravity
         this.isJumping = true; //because the character starts off by jumping off the first mountain and landing.
         this.isPlummeting = false;
         this.offSet = 80;
         this.returnSpeed = 0; //\\this value will control the reverse movement of bg items
         this.movingRight = true;
+        this.img = charImgStanding;
     }
+
+    // show() {
+    //     push();
+    //     rectMode(CENTER);  
+
+    //     //common parts
+    //     stroke(0);
+    //     strokeWeight(1);
+    //     fill(255, 68, 0);
+    //     ellipse(this.x, this.y - 70, 20, 20); //head
+    //     fill(255, 230, 0);
+    //     rect(this.x, this.y - 40, 30, 40); //body
+    //     fill(200, 0, 0);
+    //     rectMode(CORNER);
+    //     if (!this.isJumping) {
+    //         //longer legs for walking
+    //         rect(this.x - 10, this.y - 20, 5, 20); //left leg
+    //         rect(this.x + 5, this.y - 20, 5, 20); //right leg
+    //         fill(0, 15, 255);
+    //         ellipse(this.x - 7.5, this.y - 2, 8, 6); //left foot
+    //         ellipse(this.x + 7.5, this.y - 2, 8, 6); //right foot
+    //     } else {
+    //         //shorter legs for jumping
+    //         rect(this.x - 10, this.y - 20, 5, 5); //left leg
+    //         rect(this.x + 5, this.y - 20, 5, 5); //right leg
+    //         fill(0, 15, 255);
+    //         ellipse(this.x - 7.5, this.y - 12, 8, 6); //left foot
+    //         ellipse(this.x + 7.5, this.y - 12, 8, 6); //right foot
+    //     }
+    //     fill(200, 0, 0);
+    //     if (this.movingRight) {
+    //         //right facing
+    //         rect(this.x + 15, this.y - 50, 20, 5); //arm from behind
+    //         rect(this.x, this.y - 40, 30, 5); //arm from front
+    //         fill(0, 15, 255);
+    //         ellipse(this.x + 35, this.y - 47.5, 8, 8); //hand from behind
+    //         ellipse(this.x + 30, this.y - 37.5, 8, 8); //hand from front
+    //     } else {
+    //         //left facing
+    //         rect(this.x - 35, this.y - 50, 20, 5); //arm from behind
+    //         rect(this.x - 30, this.y - 40, 30, 5); //arm from front
+    //         fill(0, 15, 255);
+    //         ellipse(this.x - 35, this.y - 47.5, 8, 8); //hand from behind
+    //         ellipse(this.x - 30, this.y - 37.5, 8, 8); //hand from front
+    //     }
+    //     pop();
+    // }
 
     show() {
         push();
-        rectMode(CENTER);  
+        imageMode(CENTER);
 
-        //common parts
-        stroke(0);
-        strokeWeight(1);
-        fill(255, 68, 0);
-        ellipse(this.x, this.y - 70, 20, 20); //head
-        fill(255, 230, 0);
-        rect(this.x, this.y - 40, 30, 40); //body
-        fill(200, 0, 0);
-        rectMode(CORNER);
-        if (!this.isJumping) {
-            //longer legs for walking
-            rect(this.x - 10, this.y - 20, 5, 20); //left leg
-            rect(this.x + 5, this.y - 20, 5, 20); //right leg
-            fill(0, 15, 255);
-            ellipse(this.x - 7.5, this.y - 2, 8, 6); //left foot
-            ellipse(this.x + 7.5, this.y - 2, 8, 6); //right foot
-        } else {
-            //shorter legs for jumping
-            rect(this.x - 10, this.y - 20, 5, 5); //left leg
-            rect(this.x + 5, this.y - 20, 5, 5); //right leg
-            fill(0, 15, 255);
-            ellipse(this.x - 7.5, this.y - 12, 8, 6); //left foot
-            ellipse(this.x + 7.5, this.y - 12, 8, 6); //right foot
+        this.img = charImgStanding; //by default the character is standing
+        let i; //variable to control animation.
+        
+        translate(this.x, this.y - this.h / 2); //to flip in case of direction change
+
+        if (this.moveOn) { //in case it's running
+            i = floor((frameCount / 1.5) % 15);
+            this.img = charImgsRunning[i]; 
         }
-        fill(200, 0, 0);
-        if (this.movingRight) {
-            //right facing
-            rect(this.x + 15, this.y - 50, 20, 5); //arm from behind
-            rect(this.x, this.y - 40, 30, 5); //arm from front
-            fill(0, 15, 255);
-            ellipse(this.x + 35, this.y - 47.5, 8, 8); //hand from behind
-            ellipse(this.x + 30, this.y - 37.5, 8, 8); //hand from front
-        } else {
-            //left facing
-            rect(this.x - 35, this.y - 50, 20, 5); //arm from behind
-            rect(this.x - 30, this.y - 40, 30, 5); //arm from front
-            fill(0, 15, 255);
-            ellipse(this.x - 35, this.y - 47.5, 8, 8); //hand from behind
-            ellipse(this.x - 30, this.y - 37.5, 8, 8); //hand from front
+        if (this.isJumping) { //in case it's jumping
+            i = floor((frameCount / 3) % 15);
+            this.img = charImgsJumping[i];
         }
+
+        if (!this.movingRight) //in case running or jumping left 
+            scale(-1, 1);
+
+        image(this.img, 0, 0, this.w, this.h);
         pop();
     }
 
@@ -79,7 +105,7 @@ class Character {
 
     moveRight() {
         if (this.isAtLeftEdge()) {
-            this.x += 10; //\\ this line is to fix a bug when the character stops moving at the edge
+            this.x += 10; // this line is to fix a bug when the character stops moving at the edge
         }
         this.xspeed = 5;
         this.movingRight = true;
@@ -87,17 +113,17 @@ class Character {
 
     moveLeft() {
         if (this.isAtRightEdge()) {
-            this.x -= 10; //\\ this line is to fix a bug when the character stops moving at the edge
+            this.x -= 10; // this line is to fix a bug when the character stops moving at the edge
         }
         this.xspeed = -5;
         this.movingRight = false;
     }
 
     updateX() {
-        if ((this.isAtRightEdge())) {
+        if ((this.isAtRightEdge()) && this.moveOn) {
             this.xspeed = 0;
             this.returnSpeed = -5;
-        } else if (this.isAtLeftEdge() && this.isNotAtLeftEnd()) {
+        } else if (this.isAtLeftEdge() && this.isNotAtLeftEnd() && this.moveOn) {
             this.xspeed = 0;
             this.returnSpeed = 5;
         }

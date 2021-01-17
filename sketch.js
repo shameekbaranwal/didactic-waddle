@@ -17,12 +17,6 @@ let charPosition;
 let speed;
 let char;
 
-let cloudImg; //to store the cloud image.
-let coinImgs; //to store the array of six coin images.
-let charImg; //to store the character images, which will depend on direction of movement.
-let charRightImg; //to store the right-facing character image.
-let charLeftImg; //to store the left-facing character image.
-let coinSound; //to store sound upon collecting coins, added p5.sound.js for making it work.
 let trees_x = []; //array to store tree x positions.
 let canyons_x = []; //array to store canyon x positions.
 let coins_Pos = []; //array to store coins position (x, y).
@@ -41,10 +35,48 @@ let endPos; //to store the ending position, where the mountain will be situated.
 let isLaunched; //to store boolean whether game has launched.
 let skyColour; //to store sky (and improvised canyon) colour based on current time.
 let hr; //will contain the scale by which sky colour will get adjusted.
-let isMuted;
+let isMuted; //will contain boolean whether to play the sound or not.
+let charImgsRunning; //array of images for running animation.
+let charImgsJumping; //array of images for jumping animation.
+let charImgStanding; //array of images for standing character.
 
 function preload() {
 	coinSound = loadSound('sfx/coin.wav');
+	charImgStanding = loadImage('images/idle.png');
+	charImgsRunning = [
+		loadImage('images/running/Run (1).png'),
+		loadImage('images/running/Run (2).png'),
+		loadImage('images/running/Run (3).png'),
+		loadImage('images/running/Run (4).png'),
+		loadImage('images/running/Run (5).png'),
+		loadImage('images/running/Run (6).png'),
+		loadImage('images/running/Run (7).png'),
+		loadImage('images/running/Run (8).png'),
+		loadImage('images/running/Run (9).png'),
+		loadImage('images/running/Run (10).png'),
+		loadImage('images/running/Run (11).png'),
+		loadImage('images/running/Run (12).png'),
+		loadImage('images/running/Run (13).png'),
+		loadImage('images/running/Run (14).png'),
+		loadImage('images/running/Run (15).png'),
+	];
+	charImgsJumping = [
+		loadImage('images/jumping/Jump (1).png'),
+		loadImage('images/jumping/Jump (2).png'),
+		loadImage('images/jumping/Jump (3).png'),
+		loadImage('images/jumping/Jump (4).png'),
+		loadImage('images/jumping/Jump (5).png'),
+		loadImage('images/jumping/Jump (6).png'),
+		loadImage('images/jumping/Jump (7).png'),
+		loadImage('images/jumping/Jump (8).png'),
+		loadImage('images/jumping/Jump (9).png'),
+		loadImage('images/jumping/Jump (10).png'),
+		loadImage('images/jumping/Jump (11).png'),
+		loadImage('images/jumping/Jump (12).png'),
+		loadImage('images/jumping/Jump (13).png'),
+		loadImage('images/jumping/Jump (14).png'),
+		loadImage('images/jumping/Jump (15).png'),
+	];
 }
 
 function setup() {
@@ -54,7 +86,7 @@ function setup() {
 	isLaunched = false;
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
 	skyColour = [100 * hr, 155 * hr, 255 * hr];
-	isMuted = false;
+	isMuted = true;
 	setLevel_1();
 }
 
@@ -442,30 +474,30 @@ function showScore() {
 //for motion of character in scene 
 function keyPressed() {
 
-	if (key === 'A' || keyCode === 37) {
+	if (key === 'A' || keyCode === 37 && isLaunched) {
 		if (!char.isAtLeftEdge()) {
 			char.moveLeft();
+			char.moveOn = true;
 		} else {
-			scrollPos += 5;
+			char.moveOn = false;
 		}
 	}
-
-
-	if (key === 'D' || keyCode === 39) {
+	
+	
+	else if (key === 'D' || keyCode === 39 && isLaunched) {
 		if (!char.isAtRightEdge()) {
 			if (char.isAtLeftEdge)
-				char.moveOn = true;
+			char.moveOn = true;
 			char.moveRight();
 		} else {
-			scrollPos += 5;
+			char.moveOn = false;
 		}
 	}
 }
 
 //this function will be executed once when either of these keys are released.
 function keyReleased() {
-	char.moveOn = false;
-
+	
 	if ((key === 'A' || keyCode === 37) && isLaunched) {
 		//all speeds are made 0 when key is released.
 		char.xspeed = 0;
@@ -473,8 +505,9 @@ function keyReleased() {
 		char.returnSpeed = 0;
 		//this minor offset is included to fix a bug.
 		char.x += 5;
+		char.moveOn = false;
 	}
-
+	
 	if ((key === 'D' || keyCode === 39) && isLaunched) {
 		//all speeds are made 0 when key is released.
 		char.xspeed = 0;
@@ -482,6 +515,7 @@ function keyReleased() {
 		char.returnSpeed = 0;
 		//this minor offset is included to fix a bug.
 		char.x -= 5;
+		char.moveOn = false;
 	}
 
 	if (key === 'R' && isLaunched) {
