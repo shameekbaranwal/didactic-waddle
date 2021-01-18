@@ -24,6 +24,6 @@ class Canyon {
 
 
     isInCanyon(charX, charW) {
-        return ((charX - charW/2 >= this.x1) && (charX + 10 <= this.x2));
+        return ((charX - charW/2 + 10 >= this.x1) && (charX + 10 <= this.x2)); //the '10' is to make the edges look more realistic 
     }
 }

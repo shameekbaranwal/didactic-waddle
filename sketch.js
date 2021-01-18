@@ -17,6 +17,7 @@ let charPosition;
 let speed;
 let char;
 
+let level1;
 let trees_x = []; //array to store tree x positions.
 let canyons_x = []; //array to store canyon x positions.
 let coins_Pos = []; //array to store coins position (x, y).
@@ -41,6 +42,7 @@ let charImgsJumping; //array of images for jumping animation.
 let charImgStanding; //array of images for standing character.
 
 function preload() {
+	level1 = loadJSON('config/level-1.json');
 	coinSound = loadSound('sfx/coin.wav');
 	charImgStanding = loadImage('images/idle.png');
 	charImgsRunning = [
@@ -246,7 +248,7 @@ function setLevel_1() {
 	char = new Character(gameChar_x, gameChar_y);
 
 	// Variables to control the background scrolling.
-	endPos = 4400;
+	endPos = level1.size;
 	scrollPos = 0;
 	speed = 0;
 	charPosition = char.x; //this variable will contain the distance of the character wrt origin, we use this
@@ -266,160 +268,24 @@ function setLevel_1() {
 	}
 
 	//trees
-	trees_x = [
-		40,
-		300,
-		700,
-		1100,
-		1350,
-		1850,
-		2100,
-		2300,
-		2700,
-		2900,
-		3300,
-		3500,
-		3720,
-		3900
-	];
-
+	arrayCopy(level1['trees_x'], trees_x, level1['trees_x'].length);
 	for (let i = 0; i < trees_x.length; i++) {
 		trees[i] = new Tree(trees_x[i], floorPos_y, i);
 	}
 
 	//canyon
-	canyons_x = [
-		412,
-		1550,
-		2400,
-		3000
-	];
-
+	arrayCopy(level1['canyons_x'], canyons_x, level1['canyons_x'].length);
 	for (let i = 0; i < canyons_x.length; i++) {
 		canyons[i] = new Canyon(canyons_x[i], 200);
 	}
 
 	//coins
-	{
-		//the coins will be added wrt a coordinate system where origin is at 
-		//the left-most point of floor, and y-axis points up. 
-		//Every element is a 2D array containing the position
-		//as [x, y] coordinates with respect to the aforementioned coordinate system.
-		coins_Pos = [
-			[200, 30],
-			[270, 30],
-			[300, 30],
-			[330, 30],
-			[390, 30],
-			//canyon 1 starts
-			[420, 70],
-			[470, 170],
-			[600, 70],
-			[512, 200],
-			[420, 120],
-			[550, 170],
-			[600, 120],
-			//canyon 1 ends
-			//line 1 starts
-			[750, 30],
-			[750, 70],
-			[750, 120],
-			[750, 170],
-			//line 1 ends
-			[800, 30],
-			[850, 30],
-			[920, 30],
-			[1000, 30],
-			[1000, 100],
-			//line 2 starts
-			[1200, 30],
-			[1200, 70],
-			[1200, 120],
-			[1200, 170],
-			//line 2 ends
-			[1300, 30],
-			[1400, 30],
-			[1470, 30],
-			//canyon 2 starts
-			[1575, 30],
-			[1605, 50],
-			[1635, 80],
-			[1665, 50],
-			[1710, 30],
-			[1575, 100],
-			[1605, 150],
-			[1635, 200],
-			[1665, 150],
-			[1710, 100],
-			//canyon 2 ends
-			[1770, 30],
-			[1850, 30],
-			[1900, 30],
-			[2000, 30],
-			[2000, 80],
-			//line 3 starts
-			[2100, 30],
-			[2100, 70],
-			[2100, 120],
-			[2100, 170],
-			//line 3 ends
-			[2300, 30],
-			[2300, 80],
-			//canyon 3 starts
-			[2420, 30],
-			[2450, 50],
-			[2480, 80],
-			[2510, 50],
-			[2540, 30],
-			[2420, 100],
-			[2450, 150],
-			[2480, 200],
-			[2510, 150],
-			[2540, 100],
-			[2420, 170],
-			[2540, 170],
-			//canyon 3 ends
-			[2700, 30],
-			[2800, 30],
-			[2800, 80],
-			[2900, 30],
-			//canyon 4 begins
-			[3050, 30],
-			[3080, 50],
-			[3110, 80],
-			[3140, 50],
-			[3170, 30],
-			//canyon 4 ends
-			[3300, 30],
-			//line 4 begins
-			[3400, 30],
-			[3400, 70],
-			[3400, 120],
-			[3400, 170],
-			//line 4 ends
-			[3600, 30],
-			//line 5 begins
-			[3900, 30],
-			[3900, 70],
-			[3900, 120],
-			[3900, 170],
-			//line 5 ends
-		]
-	}
+	arrayCopy(level1['coins_Pos'], coins_Pos, level1['coins_Pos'].length);
 	for (let i = 0; i < coins_Pos.length; i++)
 		coins[i] = new Coin(coins_Pos[i]);
 
 	//birds 
-	birds_Pos = [
-		[300, 250],
-		[850, 250],
-		[1450, 200],
-		[2000, 150],
-		[2750, 150],
-		[3700, 250],
-		[3900, 150]
-	];
-
+	arrayCopy(level1['birds_Pos'], birds_Pos, level1['birds_Pos'].length);
 	for (let i = 0; i < birds_Pos.length; i++)
 		birds[i] = new Bird(birds_Pos[i]);
 }
@@ -427,11 +293,11 @@ function setLevel_1() {
 //function executes whenever you reach the end mountain.
 function youWin() {
 	//the character will enter the mountain in this triangle upon winning the game.
+	noLoop();
 	fill(77, 44, 0)
 	stroke(0);
-	strokeWeight(5);
+	strokeWeight(1);
 	triangle(char.x - 80, floorPos_y, char.x + 80, floorPos_y, char.x, floorPos_y - 100);
-	noLoop();
 	push();
 	fill(255);
 	strokeWeight(2);
@@ -481,13 +347,11 @@ function keyPressed() {
 		} else {
 			char.moveOn = false;
 		}
-	}
-	
-	
-	else if (key === 'D' || keyCode === 39 && isLaunched) {
+	} else
+	if (key === 'D' || keyCode === 39 && isLaunched) {
 		if (!char.isAtRightEdge()) {
 			if (char.isAtLeftEdge)
-			char.moveOn = true;
+				char.moveOn = true;
 			char.moveRight();
 		} else {
 			char.moveOn = false;
@@ -497,7 +361,7 @@ function keyPressed() {
 
 //this function will be executed once when either of these keys are released.
 function keyReleased() {
-	
+
 	if ((key === 'A' || keyCode === 37) && isLaunched) {
 		//all speeds are made 0 when key is released.
 		char.xspeed = 0;
@@ -507,7 +371,7 @@ function keyReleased() {
 		char.x += 5;
 		char.moveOn = false;
 	}
-	
+
 	if ((key === 'D' || keyCode === 39) && isLaunched) {
 		//all speeds are made 0 when key is released.
 		char.xspeed = 0;
@@ -537,7 +401,6 @@ function keyReleased() {
 		isMuted = !isMuted;
 	}
 }
-
 
 //function to check if character is in canyon space and hence, falling.
 function isFalling() {
