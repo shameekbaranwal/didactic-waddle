@@ -163,9 +163,10 @@ class Character {
                 this.gravity = 0;
             }
         } else if (this.y < floorPos_y) {
-            if (!this.isJumping) {
+            if (!this.isJumping && !isFalling()) {
                 this.isJumping = true;
                 this.gravity = 0.7;
+                // this.isPlummeting = true
             }
         }
 
@@ -198,7 +199,8 @@ class Character {
 
     jump() {
         if (!this.isJumping) {
-            if (this.isPlummeting || (this.y - floorPos_y || this.onAnyPlatform(platforms)) <= this.yspeed) { //so the character can jump only when it's above floor or in canyon
+            //so the character can jump only when it's above floor or any platform or in canyon
+            if (this.isPlummeting || (this.y - floorPos_y <= this.yspeed) || this.onAnyPlatform(platforms)) { 
                 this.yspeed = -15;
                 this.isJumping = true;
                 this.gravity = 0.7;

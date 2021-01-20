@@ -267,7 +267,7 @@ function setLevel_1() {
 
 	//platforms
 	arrayCopy(level1['platforms_Pos'], platforms_Pos, level1['platforms_Pos'].length);
-	for(let i = 0; i < platforms_Pos.length; i++) {
+	for (let i = 0; i < platforms_Pos.length; i++) {
 		platforms[i] = new Platform(platforms_Pos[i]);
 	}
 
@@ -422,8 +422,10 @@ function keyReleased() {
 function isFalling() {
 	for (let i = 0; i < canyons_x.length; i++) {
 		if (canyons[i].isInCanyon(char.x - scrollPos, char.w)) {
-			char.isPlummeting = true;
-			return true;
+			if (!char.onAnyPlatform(platforms)) {
+				char.isPlummeting = true;
+				return true;
+			}
 		}
 	}
 	char.isPlummeting = false;
