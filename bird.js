@@ -48,7 +48,7 @@ class Bird {
     }
 
     hit(charPos, char) { //importing character position after scrolling separately since it may get lost in translation. 
-        if ((char.y - char.h / 2 <= this.y + this.h) && (char.y + char.h / 2 >= this.y - this.h)) {
+        if ((char.y - char.h <= this.y + this.h) && (char.y >= this.y - this.h)) {
             if ((charPos - char.w / 2 <= this.centerPos + this.x) && (charPos + char.w / 2 >= this.centerPos + this.x)) {
                 return true;
             }
