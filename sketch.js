@@ -22,6 +22,7 @@ let trees_x = []; //array to store tree x positions.
 let canyons_x = []; //array to store canyon x positions.
 let coins_Pos = []; //array to store coins position (x, y).
 let birds_Pos = [] //array to store the birds position (x, y).
+let platforms_Pos = []; //array to store platforms' chaaracteristics (x, y, w);
 let clouds = []; //array of instances of Cloud class.
 let trees = []; //array of instances of Tree class.
 let mountainStart; //mountain where level begins.
@@ -29,6 +30,7 @@ let mountainEnd; //mountain where level ends.
 let canyons = []; //array of instances of Canyon class.
 let coins = []; //array of instances of Coin class.
 let birds = []; //array of instances of Bird class.
+let platforms = []; //array of instances of Platform class.
 let cloudsNum; //to store the fixed amount of fixed clouds based on level size.
 let score; //to store number of collectibles collected.
 let scrollPos; //to store scrolling distance.
@@ -45,6 +47,10 @@ function preload() {
 	level1 = loadJSON('config/level-1.json');
 	coinSound = loadSound('sfx/coin.wav');
 	charImgStanding = loadImage('images/idle.png');
+}
+
+function setup() {
+	createCanvas(1024, 576); //1024 x 576, 16:9
 	charImgsRunning = [
 		loadImage('images/running/Run (1).png'),
 		loadImage('images/running/Run (2).png'),
@@ -79,10 +85,6 @@ function preload() {
 		loadImage('images/jumping/Jump (14).png'),
 		loadImage('images/jumping/Jump (15).png'),
 	];
-}
-
-function setup() {
-	createCanvas(1024, 576); //1024 x 576, 16:9
 	frameRate(60);
 	score = 0;
 	isLaunched = false;
@@ -130,7 +132,7 @@ function draw() {
 			canyons[i].show();
 		}
 
-		// Draw collectable items
+		// Draw coins
 		for (let i = 0; i < coins_Pos.length; i++) {
 			if (coins[i] !== undefined) // since we will be devaring coins from array.
 			{
@@ -152,8 +154,20 @@ function draw() {
 				gameOver();
 		}
 
+		// Draw platforms
+		for (let i = 0; i < platforms_Pos.length; i++) {
+			platforms[i].show();
+		}
+
 		if (char.offScreen()) {
 			gameOver();
+		}
+
+		//////// Game character logic ///////
+		// Logic to move
+
+		if (isFalling()) { //logic for character falling in canyon.
+			char.gravity = 0.7;
 		}
 
 		pop();
@@ -164,12 +178,6 @@ function draw() {
 
 
 
-		//////// Game character logic ///////
-		// Logic to move
-
-		if (isFalling()) { //logic for character falling in canyon.
-			char.gravity = 0.7;
-		}
 
 		//to determine position of character in space.
 		charPosition = char.x - scrollPos;
@@ -257,6 +265,12 @@ function setLevel_1() {
 
 	// Initialise arrays of scenery objects.
 
+	//platforms
+	arrayCopy(level1['platforms_Pos'], platforms_Pos, level1['platforms_Pos'].length);
+	for(let i = 0; i < platforms_Pos.length; i++) {
+		platforms[i] = new Platform(platforms_Pos[i]);
+	}
+
 	//mountain
 	mountainStart = new Mountain(gameChar_x);
 	mountainEnd = new Mountain(endPos);
@@ -281,13 +295,15 @@ function setLevel_1() {
 
 	//coins
 	arrayCopy(level1['coins_Pos'], coins_Pos, level1['coins_Pos'].length);
-	for (let i = 0; i < coins_Pos.length; i++)
+	for (let i = 0; i < coins_Pos.length; i++) {
 		coins[i] = new Coin(coins_Pos[i]);
+	}
 
 	//birds 
 	arrayCopy(level1['birds_Pos'], birds_Pos, level1['birds_Pos'].length);
-	for (let i = 0; i < birds_Pos.length; i++)
+	for (let i = 0; i < birds_Pos.length; i++) {
 		birds[i] = new Bird(birds_Pos[i]);
+	}
 }
 
 //function executes whenever you reach the end mountain.

@@ -17,6 +17,7 @@ class Character {
         this.returnSpeed = 0; //\\this value will control the reverse movement of bg items
         this.movingRight = true;
         this.img = charImgStanding;
+        this.pl = -1;
     }
 
     // show() {
@@ -72,12 +73,12 @@ class Character {
 
         this.img = charImgStanding; //by default the character is standing
         let i; //variable to control animation.
-        
+
         translate(this.x, this.y - this.h / 2); //to flip in case of direction change
 
         if (this.moveOn) { //in case it's running
             i = floor((frameCount / 1.5) % 15);
-            this.img = charImgsRunning[i]; 
+            this.img = charImgsRunning[i];
         }
         if (this.isJumping) { //in case it's jumping
             i = floor((frameCount / 3) % 15);
@@ -90,6 +91,8 @@ class Character {
         image(this.img, 0, 0, this.w, this.h);
         pop();
     }
+
+    //for x direction
 
     isAtRightEdge() {
         return ((this.x + this.w / 2) >= width - this.offSet);
@@ -130,7 +133,43 @@ class Character {
         this.x += this.xspeed;
     }
 
+
+    //for y direction
+
+    onGround() {
+        return (abs(this.y - floorPos_y) < this.yspeed);
+    }
+
+    onPlatform(platform) { //function checks if char has climbed/fell on any platform
+        return ((abs(this.y - platform.y1) <= this.yspeed) && (this.x - 10 < platform.x2 + scrollPos && this.x + 10 > platform.x1 + scrollPos));
+    }
+
     updateY() {
+
+        /*
+        pseudo-code
+        if the character is on any platform, then if it is jumping, make it stop jumping and 
+        make it stand on that platform
+        and if the character is not on any platform AND it's not on the ground AND it wasnt jumping
+        (which means it's basically floating in the air), make it fall by mimicing a jump sequence by 
+        bringing gravity and by making this.isJumping true till it reaches ground
+        */
+
+        if (this.onAnyPlatform(platforms)) {
+            if (this.isJumping) {
+                this.isJumping = false;
+                this.y = platforms[this.plat].y1;
+                this.yspeed = 0;
+                this.gravity = 0;
+            }
+        } else if (this.y < floorPos_y) {
+            if (!this.isJumping) {
+                this.isJumping = true;
+                this.gravity = 0.7;
+            }
+        }
+
+
         if (this.onGround()) {
             if (this.isJumping && !this.isPlummeting) {
                 this.isJumping = false;
@@ -139,17 +178,27 @@ class Character {
                 this.gravity = 0;
             }
         }
+
         this.yspeed += this.gravity;
         this.y += this.yspeed;
     }
 
-    onGround() {
-        return (abs(this.y - floorPos_y) < this.yspeed);
+    onAnyPlatform(platforms) {
+        for (let i = 0; i < platforms.length; i++) {
+            if (this.onPlatform(platforms[i])) {
+                // console.log('on');
+                this.plat = i;
+                return true;
+            }
+        }
+        this.plat = -1;
+        // console.log('off');
+        return false;
     }
 
     jump() {
         if (!this.isJumping) {
-            if (this.isPlummeting || (this.y - floorPos_y) <= 10) { //so the character can jump only when it's above floor or in canyon
+            if (this.isPlummeting || (this.y - floorPos_y || this.onAnyPlatform(platforms)) <= this.yspeed) { //so the character can jump only when it's above floor or in canyon
                 this.yspeed = -15;
                 this.isJumping = true;
                 this.gravity = 0.7;
