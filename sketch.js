@@ -47,10 +47,6 @@ function preload() {
 	level1 = loadJSON('config/level-1.json');
 	coinSound = loadSound('sfx/coin.wav');
 	charImgStanding = loadImage('images/idle.png');
-}
-
-function setup() {
-	createCanvas(1024, 576); //1024 x 576, 16:9
 	charImgsRunning = [
 		loadImage('images/running/Run (1).png'),
 		loadImage('images/running/Run (2).png'),
@@ -85,6 +81,10 @@ function setup() {
 		loadImage('images/jumping/Jump (14).png'),
 		loadImage('images/jumping/Jump (15).png'),
 	];
+}
+
+function setup() {
+	createCanvas(1024, 576); //1024 x 576, 16:9
 	frameRate(60);
 	score = 0;
 	isLaunched = false;
@@ -267,6 +267,10 @@ function setLevel_1() {
 
 	//platforms
 	arrayCopy(level1['platforms_Pos'], platforms_Pos, level1['platforms_Pos'].length);
+
+	// platforms_Pos.push([700, 300, 100]);
+	// platforms_Pos.push([600, 350, 100]);
+
 	for (let i = 0; i < platforms_Pos.length; i++) {
 		platforms[i] = new Platform(platforms_Pos[i]);
 	}
