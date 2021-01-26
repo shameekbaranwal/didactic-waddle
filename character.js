@@ -17,7 +17,7 @@ class Character {
         this.returnSpeed = 0; //\\this value will control the reverse movement of bg items
         this.movingRight = true;
         this.img = charImgStanding;
-        this.pl = -1;
+        this.plat = -1;
     }
 
     // show() {
@@ -103,7 +103,7 @@ class Character {
     }
 
     isNotAtLeftEnd() {
-        return ((charPosition > 130));
+        return ((charPosition > gameChar_x));
     }
 
     moveRight() {
@@ -137,7 +137,12 @@ class Character {
     //for y direction
 
     onGround() {
-        return (abs(this.y - floorPos_y) < this.yspeed);
+        if (abs(this.y - floorPos_y) < this.yspeed) {
+            this.plat = -1;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     onPlatform(platform) { //function checks if char has climbed/fell on any platform
@@ -166,7 +171,6 @@ class Character {
             if (!this.isJumping && !isFalling()) {
                 this.isJumping = true;
                 this.gravity = 0.7;
-                // this.isPlummeting = true
             }
         }
 
@@ -187,23 +191,26 @@ class Character {
     onAnyPlatform(platforms) {
         for (let i = 0; i < platforms.length; i++) {
             if (this.onPlatform(platforms[i])) {
-                // console.log('on');
                 this.plat = i;
                 return true;
             }
         }
-        this.plat = -1;
-        // console.log('off');
         return false;
     }
 
     jump() {
-        if (!this.isJumping) {
+        //so the character can jump only
+        //a) when it's not already jumping, or 
+        //b) if it was already jumping, then only if that jump was the result of a free fall from ANY platform
+        //that second conditional of this.plat and this.onAnyPlatform is true only when it has fallen from a platform
+        //and hasn't reached the ground yet.
+        if (!this.isJumping || (this.plat !== -1 && !this.onAnyPlatform(platforms))) {
             //so the character can jump only when it's above floor or any platform or in canyon
-            if (this.isPlummeting || (this.y - floorPos_y <= this.yspeed) || this.onAnyPlatform(platforms)) { 
+            if (this.isPlummeting || (this.y - floorPos_y <= this.yspeed) || this.onAnyPlatform(platforms) || this.plat >= 0) {
                 this.yspeed = -15;
                 this.isJumping = true;
                 this.gravity = 0.7;
+                this.plat = -1;
             }
         }
     }
