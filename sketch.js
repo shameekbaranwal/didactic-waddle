@@ -203,6 +203,8 @@ function draw() {
 		if (charPosition >= endPos) //when character will enter mountain.
 			youWin();
 	}
+
+	drawMuteButton();
 }
 
 
@@ -241,7 +243,7 @@ function launchScreen() {
 
 	char.show();
 	if (-scrollPos >= endPos)
-		scrollPos = 0; //in case you don't start the game till you reach the end of arrays.
+		scrollPos = width; //in case you don't start the game till you reach the end of arrays.
 }
 
 //function to set the environment for level 1. It is seperated out, so more levels can be added
@@ -434,4 +436,18 @@ function isFalling() {
 	}
 	char.isPlummeting = false;
 	return false;
+}
+
+function drawMuteButton() {
+	if (isMuted)
+		fill(255, 0, 0)
+	else
+		fill(255);
+	rect(width - 60, height - 60, 20, 20);
+	triangle(width - 50, height - 50, width - 20, height - 80, width - 20, height - 20);
+}
+
+function mousePressed() {
+	if (mouseX >= width - 60 && mouseX <= width && mouseY <= height && mouseY >= height - 80)
+		isMuted = !isMuted;
 }
