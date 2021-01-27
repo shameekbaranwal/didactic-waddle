@@ -42,6 +42,7 @@ let isMuted; //will contain boolean whether to play the sound or not.
 let charImgsRunning; //array of images for running animation.
 let charImgsJumping; //array of images for jumping animation.
 let charImgStanding; //array of images for standing character.
+let generateButton; //button to redirect to level creating page.
 
 function preload() {
 	level1 = loadJSON('config/level-1.json');
@@ -86,6 +87,7 @@ function preload() {
 function setup() {
 	createCanvas(1024, 576); //1024 x 576, 16:9
 	frameRate(60);
+	// generateButton = createButton();
 	score = 0;
 	isLaunched = false;
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
