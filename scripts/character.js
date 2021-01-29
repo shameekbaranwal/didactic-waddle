@@ -110,7 +110,7 @@ class Character {
         if (this.isAtLeftEdge()) {
             this.x += 10; // this line is to fix a bug when the character stops moving at the edge
         }
-        this.xspeed = 5;
+        this.xspeed = globalSpeed;
         this.movingRight = true;
     }
 
@@ -118,17 +118,17 @@ class Character {
         if (this.isAtRightEdge()) {
             this.x -= 10; // this line is to fix a bug when the character stops moving at the edge
         }
-        this.xspeed = -5;
+        this.xspeed = -globalSpeed;
         this.movingRight = false;
     }
 
     updateX() {
         if ((this.isAtRightEdge()) && this.moveOn) {
             this.xspeed = 0;
-            this.returnSpeed = -5;
+            this.returnSpeed = -globalSpeed;
         } else if (this.isAtLeftEdge() && this.isNotAtLeftEnd() && this.moveOn) {
             this.xspeed = 0;
-            this.returnSpeed = 5;
+            this.returnSpeed = globalSpeed;
         }
         this.x += this.xspeed;
     }

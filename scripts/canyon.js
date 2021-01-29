@@ -2,15 +2,16 @@
 
 class Canyon {
 
-    constructor (x1, w) {
-        this.x1 = x1;
-        this.w = w;
-        this.x2 = x1 + this.w;
+    constructor (arg) {
+        this.x1 = arg[0];
+        this.w = arg[1] || 200;
+        this.x2 = this.x1 + this.w;
         this.triangleSize = random (10, 40);
     }
 
     show() {
         push();
+        noStroke();
         fill(skyColour);
         rect(this.x1, floorPos_y, this.w, (height - floorPos_y));
         fill(0, 90, 0);
@@ -23,7 +24,11 @@ class Canyon {
     }
 
 
-    isInCanyon(charX, charW) {
-        return ((charX - charW/2 + 10 >= this.x1) && (charX + 10 <= this.x2)); //the '10' is to make the edges look more realistic 
+    isInCanyon(charX, charW, offset) {
+        return ((charX - charW/2 + offset >= this.x1) && (charX + offset <= this.x2)); //the '10' is to make the edges look more realistic 
+    }
+
+    inside(x) {
+        return ((x <= this.x2 && x >= this.x1));
     }
 }

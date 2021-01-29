@@ -8,7 +8,6 @@ class Coin {
     }
 
     show() {
-        this.hasBeenCaught();
         if (!this.isFound) {
             let shrink = ((frameCount / 3) % 6); // for rotating animation.
             push();
@@ -24,7 +23,7 @@ class Coin {
         }
     }
 
-    hasBeenCaught() {
+    hasBeenCaught(charPosition) {
         if (abs(this.x - charPosition) < char.w / 2) {
             if (abs(this.y - (char.y - char.h / 2)) <= char.h / 2) {
                 this.isFound = true;

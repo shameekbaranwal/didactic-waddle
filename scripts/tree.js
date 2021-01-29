@@ -2,17 +2,17 @@
 
 class Tree {
 
-    constructor(x, y, i) {
+    constructor(x) {
         this.h = 150;
         this.w = this.h;
         this.x = x;
-        this.y = y - this.h / 2;
-        this.i = i;
+        this.y = floorPos_y - this.h / 2;
         this.treeColour = random (100, 200); //every tree will have a random colour.
     }
 
 
     show() {
+        noStroke();
         push();
         rectMode(CENTER);
         fill(181, 101, 29); //brown for tree trunk

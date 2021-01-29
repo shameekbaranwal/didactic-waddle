@@ -2,9 +2,9 @@
 //cloud class to make cloud objects from.
 class Cloud {
 
-    constructor (x, i) {
+    constructor (i) {
         this.cloudsGap = 180;
-        this.x = x + i * this.cloudsGap;
+        this.x = 100 + i * this.cloudsGap;
         this.y = random(60, 100); //heights of clouds will be random every time. 
         this.h = 64; 
         this.w = 2 * this.h; //\\ these constants w and h control dimensions of cloud image

@@ -16,6 +16,7 @@ let isRight;
 let charPosition;
 let speed;
 let char;
+const globalSpeed = 5;
 
 let level1;
 let trees_x = []; //array to store tree x positions.
@@ -138,6 +139,7 @@ function draw() {
 		for (let i = 0; i < coins_Pos.length; i++) {
 			if (coins[i] !== undefined) // since we will be devaring coins from array.
 			{
+				coins[i].hasBeenCaught(charPosition);
 				coins[i].show();
 				if (coins[i].isFound) { //devaring coin from array to improve efficiency.
 					if (!isMuted)
@@ -286,19 +288,19 @@ function setLevel_1() {
 	//clouds
 	cloudsNum = 24;
 	for (let i = 0; i < cloudsNum; i++) {
-		clouds[i] = new Cloud(100, i); //initializing the cloud objects independent of cloudsNum
+		clouds[i] = new Cloud(i); //initializing the cloud objects independent of cloudsNum
 	}
 
 	//trees
 	arrayCopy(level1['trees_x'], trees_x, level1['trees_x'].length);
 	for (let i = 0; i < trees_x.length; i++) {
-		trees[i] = new Tree(trees_x[i], floorPos_y, i);
+		trees[i] = new Tree(trees_x[i]);
 	}
 
 	//canyon
 	arrayCopy(level1['canyons_x'], canyons_x, level1['canyons_x'].length);
 	for (let i = 0; i < canyons_x.length; i++) {
-		canyons[i] = new Canyon(canyons_x[i], 200);
+		canyons[i] = new Canyon([canyons_x[i], 200]);
 	}
 
 	//coins
@@ -364,7 +366,7 @@ function showScore() {
 //for motion of character in scene 
 function keyPressed() {
 
-	if (key === 'A' || keyCode === 37 && isLaunched) {
+	if ((key === 'A' || keyCode === 37 || key === 'a') && isLaunched) {
 		if (!char.isAtLeftEdge()) {
 			char.moveLeft();
 			char.moveOn = true;
@@ -372,7 +374,7 @@ function keyPressed() {
 			char.moveOn = false;
 		}
 	} else
-	if (key === 'D' || keyCode === 39 && isLaunched) {
+	if ((key === 'D' || keyCode === 39 || key === 'd') && isLaunched) {
 		if (!char.isAtRightEdge()) {
 			if (char.isAtLeftEdge)
 				char.moveOn = true;
@@ -386,27 +388,27 @@ function keyPressed() {
 //this function will be executed once when either of these keys are released.
 function keyReleased() {
 
-	if ((key === 'A' || keyCode === 37) && isLaunched) {
+	if ((key === 'A' || keyCode === 37 || key === 'a') && isLaunched) {
 		//all speeds are made 0 when key is released.
 		char.xspeed = 0;
 		speed = 0;
 		char.returnSpeed = 0;
 		//this minor offset is included to fix a bug.
-		char.x += 5;
+		char.x += globalSpeed;
 		char.moveOn = false;
 	}
 
-	if ((key === 'D' || keyCode === 39) && isLaunched) {
+	if ((key === 'D' || keyCode === 39 || key === 'd') && isLaunched) {
 		//all speeds are made 0 when key is released.
 		char.xspeed = 0;
 		speed = 0;
 		char.returnSpeed = 0;
 		//this minor offset is included to fix a bug.
-		char.x -= 5;
+		char.x -= globalSpeed;
 		char.moveOn = false;
 	}
 
-	if (key === 'R' && isLaunched) {
+	if ((key === 'R' || key === 'r') && isLaunched) {
 		//to reset the canvas.
 		setLevel_1();
 		score = 0;
@@ -421,7 +423,7 @@ function keyReleased() {
 		textFont('Georgia');
 	}
 
-	if (key === 'M') {
+	if (key === 'M' || key === 'm') {
 		isMuted = !isMuted;
 	}
 }
@@ -429,7 +431,7 @@ function keyReleased() {
 //function to check if character is in canyon space and hence, falling.
 function isFalling() {
 	for (let i = 0; i < canyons_x.length; i++) {
-		if (canyons[i].isInCanyon(char.x - scrollPos, char.w)) {
+		if (canyons[i].isInCanyon(char.x - scrollPos, char.w, 10)) {
 			if (!char.onAnyPlatform(platforms)) {
 				char.isPlummeting = true;
 				return true;
@@ -441,6 +443,7 @@ function isFalling() {
 }
 
 function drawMuteButton() {
+	noStroke();
 	if (isMuted)
 		fill(255, 0, 0)
 	else
