@@ -4,7 +4,7 @@ class Canyon {
 
     constructor (arg) {
         this.x1 = arg[0];
-        this.w = arg[1] || 200;
+        this.w = arg[1];
         this.x2 = this.x1 + this.w;
         this.triangleSize = random (10, 40);
     }

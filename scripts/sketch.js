@@ -16,8 +16,10 @@ let isRight;
 let charPosition;
 let speed;
 let char;
+let canv;
 const globalSpeed = 5;
 
+let currentLevel;
 let level1;
 let trees_x = []; //array to store tree x positions.
 let canyons_x = []; //array to store canyon x positions.
@@ -36,7 +38,6 @@ let cloudsNum; //to store the fixed amount of fixed clouds based on level size.
 let score; //to store number of collectibles collected.
 let scrollPos; //to store scrolling distance.
 let endPos; //to store the ending position, where the mountain will be situated.
-let isLaunched; //to store boolean whether game has launched.
 let skyColour; //to store sky (and improvised canyon) colour based on current time.
 let hr; //will contain the scale by which sky colour will get adjusted.
 let isMuted; //will contain boolean whether to play the sound or not.
@@ -44,6 +45,15 @@ let charImgsRunning; //array of images for running animation.
 let charImgsJumping; //array of images for jumping animation.
 let charImgStanding; //array of images for standing character.
 let generateButton; //button to redirect to level creating page.
+let isLaunched; //to store boolean whether game has launched.
+let mode; //alternative to boolean for controlling screen. Legend below.
+/*
+	-1: launch screen, equiv to isLaunched = false.
+	0: splash screen, ENTER to continue, button click to go to generate.html, drag/drop to play THAT level
+	1: game
+	2: levelCompleted
+	3: levelLost
+*/
 
 function preload() {
 	level1 = loadJSON('config/level-1.json');
@@ -86,15 +96,18 @@ function preload() {
 }
 
 function setup() {
-	createCanvas(1024, 576); //1024 x 576, 16:9
+	canv = createCanvas(1024, 576); //1024 x 576, 16:9
 	frameRate(60);
 	// generateButton = createButton();
 	score = 0;
 	isLaunched = false;
+	mode = -1;
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
-	skyColour = [100 * hr, 155 * hr, 255 * hr];
+	hr = (hr > 1) ? 1 : hr;
+	skyColour = [90 * hr, 145 * hr, 245 * hr];
 	isMuted = false;
-	setLevel_1();
+	currentLevel = level1;
+	setLevel(currentLevel);
 }
 
 
@@ -106,19 +119,41 @@ function draw() {
 	fill(0, 155, 0);
 	rect(0, floorPos_y, width, height / 4); // draw some green ground
 
-	if (!isLaunched) {
-		launchScreen();
-	} else {
 
-		scrollPos += speed;
+	// 	launch screen
+	if (mode === -1) {
+		launchScreen();
+	}
+
+	// option screen
+	else if (mode === 0) {
+		splashScreen();
+	} else if (mode === 0.5) {
+		stroke(0);
+		strokeWeight(2);
+		textSize(50);
+		fill(255);
+		text(`Level loaded.`, width / 2, 200);
+		textSize(20);
+		strokeWeight(0.5);
+		text(`press ENTER to start playing`, width / 2, floorPos_y + 50);
+	}
+
+
+	//actual game
+	else if (mode === 1) {
+
+		scrollPos -= speed;
 
 		push();
 
-		translate(scrollPos, 0);
+		translate(-scrollPos, 0);
 
 		// Draw clouds.
 		for (let i = 0; i < cloudsNum; i++) {
-			clouds[i].show();
+			///////////
+			if (onScreen(clouds[i], 'x', 100))
+				clouds[i].show();
 		}
 
 		//Draw mountains.
@@ -127,41 +162,48 @@ function draw() {
 
 		// Draw trees.
 		for (let i = 0; i < trees_x.length; i++) {
-			trees[i].show();
+			if (onScreen(trees[i], 'x', 100))
+				trees[i].show();
 		}
 
 		// Draw canyons
 		for (let i = 0; i < canyons_x.length; i++) {
-			canyons[i].show();
+			if (onScreen(canyons[i], 'x1', 100) || onScreen(canyons[i], 'x2', 100))
+				canyons[i].show();
 		}
 
 		// Draw coins
 		for (let i = 0; i < coins_Pos.length; i++) {
 			if (coins[i] !== undefined) // since we will be devaring coins from array.
 			{
-				coins[i].hasBeenCaught(charPosition);
-				coins[i].show();
-				if (coins[i].isFound) { //devaring coin from array to improve efficiency.
-					if (!isMuted)
-						coinSound.play();
-					coins.splice(i, 1);
-					score++;
+				if (onScreen(coins[i], 'x', 20)) {
+					coins[i].hasBeenCaught(charPosition);
+					coins[i].show();
+					if (coins[i].isFound) { //devaring coin from array to improve efficiency.
+						if (!isMuted)
+							coinSound.play();
+						coins.splice(i, 1);
+						score++;
+					}
 				}
 			}
-		}
-
-		// Draw birds
-		for (let i = 0; i < birds.length; i++) {
-			birds[i].update();
-			birds[i].show();
-			if (birds[i].hit(charPosition, char))
-				gameOver();
 		}
 
 		// Draw platforms
 		for (let i = 0; i < platforms_Pos.length; i++) {
 			platforms[i].show();
 		}
+
+		// Draw birds
+		for (let i = 0; i < birds.length; i++) {
+			if (onScreen(birds[i], 'centerPos', 40)) {
+				birds[i].update();
+				birds[i].show();
+				if (birds[i].hit(charPosition, char))
+					gameOver();
+			}
+		}
+
 
 		if (char.offScreen()) {
 			gameOver();
@@ -184,7 +226,7 @@ function draw() {
 
 
 		//to determine position of character in space.
-		charPosition = char.x - scrollPos;
+		charPosition = char.x + scrollPos;
 
 		//updating x values of character according to its xspeed which depends on key pressed.
 		//this function will change the char.returnSpeed value in case scrolling is occurring.
@@ -219,7 +261,7 @@ functions defined to do things in a more organised way
 */
 
 function launchScreen() {
-	scrollPos -= 0.8;
+	scrollPos += 0.8;
 
 	stroke(3);
 	fill(255);
@@ -235,7 +277,7 @@ function launchScreen() {
 
 	noStroke();
 	push();
-	translate(scrollPos, 0);
+	translate(-scrollPos, 0);
 	for (let i = 0; i < trees_x.length; i++) {
 		trees[i].show();
 	}
@@ -246,23 +288,25 @@ function launchScreen() {
 	pop();
 
 	char.show();
-	if (-scrollPos >= endPos)
-		scrollPos = width; //in case you don't start the game till you reach the end of arrays.
+	if (scrollPos >= endPos)
+		scrollPos = -width; //in case you don't start the game till you reach the end of arrays.
 }
 
 //function to set the environment for level 1. It is seperated out, so more levels can be added
 //using the youWin() function, by setting new values for all the variables set here.
 
-function setLevel_1() {
+function setLevel(level) {
 	floorPos_y = height * 3 / 4; //this value will be used throughout the code.
 	gameChar_x = 130;
 	gameChar_y = floorPos_y;
 
 	//initialising character
+	char = null;
 	char = new Character(gameChar_x, gameChar_y);
 
 	// Variables to control the background scrolling.
-	endPos = level1.size;
+	endPos = null;
+	endPos = level.size;
 	scrollPos = 0;
 	speed = 0;
 	charPosition = char.x; //this variable will contain the distance of the character wrt origin, we use this
@@ -272,10 +316,10 @@ function setLevel_1() {
 	// Initialise arrays of scenery objects.
 
 	//platforms
-	arrayCopy(level1['platforms_Pos'], platforms_Pos, level1['platforms_Pos'].length);
-
-	// platforms_Pos.push([700, 300, 100]);
-	// platforms_Pos.push([600, 350, 100]);
+	// arrayCopy(level['platforms_Pos'], platforms_Pos, level['platforms_Pos'].length);
+	platforms_Pos = [];
+	platforms = [];
+	platforms_Pos = level.platforms_Pos;
 
 	for (let i = 0; i < platforms_Pos.length; i++) {
 		platforms[i] = new Platform(platforms_Pos[i]);
@@ -292,25 +336,41 @@ function setLevel_1() {
 	}
 
 	//trees
-	arrayCopy(level1['trees_x'], trees_x, level1['trees_x'].length);
+	// arrayCopy(level['trees_x'], trees_x, level['trees_x'].length);
+	trees = [];
+	trees_x = [];
+	trees_x = level.trees_x;
+
 	for (let i = 0; i < trees_x.length; i++) {
 		trees[i] = new Tree(trees_x[i]);
 	}
 
 	//canyon
-	arrayCopy(level1['canyons_x'], canyons_x, level1['canyons_x'].length);
+	// arrayCopy(level['canyons_x'], canyons_x, level['canyons_x'].length);
+	canyons = [];
+	canyons_x = [];
+	canyons_x = level.canyons_x;
+
 	for (let i = 0; i < canyons_x.length; i++) {
-		canyons[i] = new Canyon([canyons_x[i], 200]);
+		canyons[i] = new Canyon(canyons_x[i]);
 	}
 
 	//coins
-	arrayCopy(level1['coins_Pos'], coins_Pos, level1['coins_Pos'].length);
+	// arrayCopy(level['coins_Pos'], coins_Pos, level['coins_Pos'].length);
+	coins = [];
+	coins_Pos = [];
+	coins_Pos = level.coins_Pos;
+
 	for (let i = 0; i < coins_Pos.length; i++) {
 		coins[i] = new Coin(coins_Pos[i]);
 	}
 
 	//birds 
-	arrayCopy(level1['birds_Pos'], birds_Pos, level1['birds_Pos'].length);
+	// arrayCopy(level['birds_Pos'], birds_Pos, level['birds_Pos'].length);
+	birds = [];
+	birds_Pos = [];
+	birds_Pos = level.birds_Pos;
+
 	for (let i = 0; i < birds_Pos.length; i++) {
 		birds[i] = new Bird(birds_Pos[i]);
 	}
@@ -342,7 +402,7 @@ function gameOver() {
 	push();
 	stroke(0);
 	strokeWeight(4);
-	translate(-scrollPos, 0);
+	translate(scrollPos, 0);
 	textAlign(CENTER);
 	fill(255);
 	textSize(70);
@@ -366,7 +426,7 @@ function showScore() {
 //for motion of character in scene 
 function keyPressed() {
 
-	if ((key === 'A' || keyCode === 37 || key === 'a') && isLaunched) {
+	if ((key === 'A' || keyCode === 37 || key === 'a') && mode > 0) {
 		if (!char.isAtLeftEdge()) {
 			char.moveLeft();
 			char.moveOn = true;
@@ -374,7 +434,7 @@ function keyPressed() {
 			char.moveOn = false;
 		}
 	} else
-	if ((key === 'D' || keyCode === 39 || key === 'd') && isLaunched) {
+	if ((key === 'D' || keyCode === 39 || key === 'd') && mode > 0) {
 		if (!char.isAtRightEdge()) {
 			if (char.isAtLeftEdge)
 				char.moveOn = true;
@@ -388,7 +448,7 @@ function keyPressed() {
 //this function will be executed once when either of these keys are released.
 function keyReleased() {
 
-	if ((key === 'A' || keyCode === 37 || key === 'a') && isLaunched) {
+	if ((key === 'A' || keyCode === 37 || key === 'a') && mode > 0) {
 		//all speeds are made 0 when key is released.
 		char.xspeed = 0;
 		speed = 0;
@@ -398,7 +458,7 @@ function keyReleased() {
 		char.moveOn = false;
 	}
 
-	if ((key === 'D' || keyCode === 39 || key === 'd') && isLaunched) {
+	if ((key === 'D' || keyCode === 39 || key === 'd') && mode > 0) {
 		//all speeds are made 0 when key is released.
 		char.xspeed = 0;
 		speed = 0;
@@ -408,19 +468,53 @@ function keyReleased() {
 		char.moveOn = false;
 	}
 
-	if ((key === 'R' || key === 'r') && isLaunched) {
+	if ((key === 'R' || key === 'r') && mode > 0) {
 		//to reset the canvas.
-		setLevel_1();
+		setLevel(currentLevel);
 		score = 0;
 		loop();
 	}
 
-	if (!isLaunched && keyCode === 13) {
-		char.y = floorPos_y - 200;
-		char.isJumping = true;
-		isLaunched = true;
-		scrollPos = 0;
-		textFont('Georgia');
+	if (keyCode === 13) {
+		if (mode === -1) {
+			mode++;
+			generateButton = createButton('Go to level generator');
+			generateButton.position(width / 2 - 50, height / 2 - 25);
+			generateButton.size(100, 50);
+			generateButton.mousePressed(() => {
+				window.location = '/generate.html';
+			})
+
+			canv.drop((file) => {
+				customLevel = file.data;
+				let f;
+				f = verifyLevel(customLevel);
+				if (f) {
+					mode += 0.5;
+					currentLevel = customLevel;
+					setLevel(currentLevel);
+					generateButton.hide();
+					char.y = floorPos_y - 200;
+					char.isJumping = true;
+					isLaunched = true;
+					scrollPos = 0;
+					textFont('Georgia');
+				} else {
+					alert("Invalid file.");
+				}
+			});
+		} else if (mode === 0.5) {
+			mode = 1;
+			canv.drop((file) => {});
+		} else if (mode === 0) {
+			mode++;
+			generateButton.hide();
+			char.y = floorPos_y - 200;
+			char.isJumping = true;
+			isLaunched = true;
+			scrollPos = 0;
+			textFont('Georgia');
+		}
 	}
 
 	if (key === 'M' || key === 'm') {
@@ -431,7 +525,7 @@ function keyReleased() {
 //function to check if character is in canyon space and hence, falling.
 function isFalling() {
 	for (let i = 0; i < canyons_x.length; i++) {
-		if (canyons[i].isInCanyon(char.x - scrollPos, char.w, 10)) {
+		if (canyons[i].isInCanyon(char.x + scrollPos, char.w, 10)) {
 			if (!char.onAnyPlatform(platforms)) {
 				char.isPlummeting = true;
 				return true;
@@ -455,4 +549,35 @@ function drawMuteButton() {
 function mousePressed() {
 	if (mouseX >= width - 60 && mouseX <= width && mouseY <= height && mouseY >= height - 80)
 		isMuted = !isMuted;
+}
+
+function onScreen(thing, loc, offset) {
+	return (thing[loc] > scrollPos - offset && thing[loc] < (scrollPos + width + offset));
+}
+
+function splashScreen() {
+	// generateButton = createButton('Go to level generator');
+	stroke(0);
+	strokeWeight(2);
+	textSize(20);
+	fill(255);
+	textAlign(CENTER);
+	text(`You can drag and drop a custom level JSON file
+which you can create on the level generator engine
+available here :`, width / 2, 200);
+
+	noStroke();
+	text(`or you can press ENTER to continue with preset levels`, width / 2, floorPos_y + 50);
+}
+
+function verifyLevel(file) {
+	return (
+		file.size &&
+		file.platforms_Pos &&
+		file.trees_x &&
+		file.birds_Pos &&
+		file.canyons_x &&
+		file.platforms_Pos &&
+		file.coins_Pos
+	)
 }

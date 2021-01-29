@@ -18,6 +18,7 @@ class Character {
         this.movingRight = true;
         this.img = charImgStanding;
         this.plat = -1;
+        this.flag = false;
     }
 
     // show() {
@@ -146,7 +147,7 @@ class Character {
     }
 
     onPlatform(platform) { //function checks if char has climbed/fell on any platform
-        return ((abs(this.y - platform.y1) <= this.yspeed) && (this.x - 10 < platform.x2 + scrollPos && this.x + 10 > platform.x1 + scrollPos));
+        return ((abs(this.y - platform.y1) <= this.yspeed) && (this.x - 10 < platform.x2 - scrollPos && this.x + 10 > platform.x1 - scrollPos));
     }
 
     updateY() {
@@ -167,11 +168,21 @@ class Character {
                 this.yspeed = 0;
                 this.gravity = 0;
             }
-        } else if (this.y < floorPos_y) {
-            if (!this.isJumping && !isFalling()) {
+        } 
+        else if (this.y < floorPos_y ) {
+            if (!this.isJumping) {
                 this.isJumping = true;
                 this.gravity = 0.7;
             }
+        } else if (this.y > floorPos_y + 40 && this.isPlummeting) {
+            if (this.isJumping) {
+                if (this.plat === -1) {
+                    if (!this.flag) {
+                        this.isJumping = false;
+                        this.flag = true;
+                    }
+                }
+            } 
         }
 
 
@@ -181,6 +192,7 @@ class Character {
                 this.y = floorPos_y;
                 this.yspeed = 0;
                 this.gravity = 0;
+                this.flag = false;
             }
         }
 
@@ -192,6 +204,7 @@ class Character {
         for (let i = 0; i < platforms.length; i++) {
             if (this.onPlatform(platforms[i])) {
                 this.plat = i;
+                this.flag = false;
                 return true;
             }
         }
