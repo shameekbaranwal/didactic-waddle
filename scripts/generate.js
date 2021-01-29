@@ -38,7 +38,8 @@ mode = 2 => awaiting tree inputs.
 mode = 3 => awaiting platform inputs.
 mode = 4 => awaiting coin inputs.
 mode = 5 => awaiting bird inputs.
-mode = 6 => done.
+mode = 6 => confirmation.
+mode = 7 => save JSON file.
 */
 
 
@@ -56,84 +57,6 @@ function draw() {
         fill(0, 155, 0);
         rect(0, floorPos_y, width, height / 4); // draw some green ground
     }
-
-
-
-    //launch screen mode
-    if (mode === -1) { //launch screen.
-        stroke(3);
-        fill(255);
-        textFont('Cascadia');
-        textSize(80);
-        textAlign(CENTER);
-        text(`didactic - waddle
-level generator`, width / 2, height / 2 - 50);
-        textFont('Monospace');
-        textSize(30);
-        text("press ENTER to start", width / 2, floorPos_y + 50);
-    }
-
-
-
-
-    //entering game size mode
-    else if (mode === 0) {
-        if (!inputField) {
-            // inputField = createInput("Enter a valid size for level (2000 - 20000)");
-            inputField = createInput("2001");
-            inputField.position(width / 2 - 125, height / 2);
-            textSize(72);
-            inputField.size(250, 40);
-            fieldButton = createButton('submit');
-            fieldButton.position(width / 2 + 125, height / 2);
-            fieldButton.size(80, 45);
-            flag = false;
-        }
-        fieldButton.mousePressed(() => {
-            temp = int(inputField.value());
-        });
-
-        if (temp != undefined && temp !== NaN) {
-            if (temp >= 2000 && temp <= 20000) {
-                zeroToOne();
-            } else {
-                temp = undefined;
-                alert('Incompatible value. Try again.');
-            }
-        }
-    }
-
-
-
-
-    //drawing canyons mode
-    else if (mode === 1) {
-        // console.log(flag);
-        if (flag) {
-            fill(200, 0, 0);
-            rect(x1, floorPos_y, mouseX - x1, height - floorPos_y);
-        }
-    }
-
-
-
-    //drawing trees mode
-    else if (mode === 2) {
-
-    }
-
-
-
-
-
-    //drawing platforms mode
-    else if (mode === 3) {
-        if (flag) {
-            fill(200, 0, 0);
-            rect(x1, y1, mouseX - x1, 15);
-        }
-    }
-
 
     push();
     translate(-scrollPos, 0);
@@ -169,10 +92,136 @@ level generator`, width / 2, height / 2 - 50);
     }
     pop();
 
+
+    //launch screen mode
+    if (mode === -1) { //launch screen.
+        stroke(3);
+        fill(255);
+        textFont('Cascadia');
+        textSize(80);
+        textAlign(CENTER);
+        text(`didactic - waddle
+level generator`, width / 2, height / 2 - 50);
+        textFont('Monospace');
+        textSize(30);
+        text("press ENTER to start", width / 2, floorPos_y + 50);
+    }
+
+
+
+
+    //entering game size mode
+    else if (mode === 0) {
+        if (!inputField) {
+            // inputField = createInput("Enter a valid size for level (2000 - 20000)");
+            inputField = createInput("2001");
+            inputField.position(width / 2 - 125, height / 2);
+            inputField.size(250, 40);
+            fieldButton = createButton('submit');
+            fieldButton.position(width / 2 + 125, height / 2);
+            fieldButton.size(80, 45);
+            flag = false;
+        }
+        fieldButton.mousePressed(() => {
+            temp = int(inputField.value());
+        });
+        showInstruction('Enter a valid size for the level (between 2000-20000)')
+        if (temp != undefined && temp !== NaN) {
+            if (temp >= 2000 && temp <= 20000) {
+                zeroToOne();
+            } else {
+                temp = undefined;
+                alert('Incompatible value. Try again.');
+            }
+        }
+    }
+
+
+
+
+    //drawing canyons mode
+    else if (mode === 1) {
+        // console.log(flag);
+        if (flag) {
+            push();
+            fill(200, 0, 0);
+            rect(x1, floorPos_y, mouseX - x1, height - floorPos_y);
+            pop();
+            showInstruction('Click again to finish drawing the canyon.');
+        } else {
+            showInstruction(`Click anywhere to start drawing a canyon
+
+or press ENTER to continue.`);
+        }
+    }
+
+
+
+    //drawing trees mode
+    else if (mode === 2) {
+        showInstruction(`Click anywhere to place a tree on the ground
+
+or press ENTER to continue.`);
+    }
+
+
+
+
+    //drawing platforms mode
+    else if (mode === 3) {
+        if (flag) {
+            fill(200, 0, 0);
+            rect(x1, y1, mouseX - x1, 15);
+            showInstruction(`Click anywhere to finish drawing this platform.`);
+        } else {
+            showInstruction(`Click anywhere to start drawing a platform
+
+or press ENTER to continue.`);
+        }
+    }
+
+
+
+
+    //drawing coins mode
+    else if (mode === 4) {
+        showInstruction(`Click anywhere to add an animated collectable
+        
+or press ENTER to continue.`);
+    }
+
+
+
+
+    //drawing bird mode
+    else if (mode === 5) {
+        showInstruction(`Click anywhere to add a waddling bird
+        
+or press ENTER to continue.`);
+    }
+
+
+    //confirmation
+    else if (mode === 6) {
+        showInstruction(`Press ENTER to confirm selections.`);
+    }
+
+    else if (mode === 7) {
+        showInstruction(`Now download the ejected JSON file, 
+and drag and drop it on the game, available here.`);
+        fieldButton = createButton('didactic-waddle');
+        fieldButton.mousePressed(() => {
+            window.location = '/';
+        });
+        noLoop();
+    }
+
+
     if (moveLeft)
         scrLeft();
     else if (moveRight)
         scrRight();
+
 
 }
 
@@ -251,6 +300,10 @@ function mousePressed() {
             if (mode === 4) {
                 addCoin(mouseX + scrollPos, mouseY);
             }
+
+            if (mode === 5) {
+                addBird(mouseX + scrollPos, mouseY);
+            }
             // addElement(mouseX + scrollPos, trees_x, Tree, trees);
             // addElement([mouseX, mouseY], birds_Pos, Bird, birds);
         }
@@ -271,8 +324,30 @@ function keyPressed() {
             mode++;
         } else if (mode === 3) {
             mode++;
+        } else if (mode === 4) {
+            mode++;
+        } else if (mode === 5) {
+            mode++;
+            //warning.
+            // console.log('sure?');
+        } else if (mode === 6) {
+            exportLevelData();
+            mode++;
+        } else if (mode === 7) {
+            console.log("khatam");
         }
     }
+
+    if (key === 'b' || key === 'B') {
+        if (mode === 1)
+            flag = false;
+            if (mode > 1) { 
+                if (!flag) {
+                mode--;
+            }
+        }
+    }
+
     if (keyCode === 39) {
         if (scrollRightButton) {
             moveRight = true;
@@ -418,19 +493,60 @@ function addCoin(x, y) {
 
     if (y > floorPos_y)
         err = "Cannot be in ground.";
-    
+
     // if (x < mountainStart.rightMostPoint || x > mountainEnd.leftMostPoint)
     //     err = 'Cannot be in front of mountain';
-        
+
     if (err) {
-        alert ("Invalid coin.\nERROR : " + err);
+        alert("Invalid coin.\nERROR : " + err);
         return;
     }
     //changing that y value before passing because of the unique coordinate system for that class.
     addElement([x, floorPos_y - y], coins_Pos, Coin, coins);
 }
 
+function addBird(x, y) {
+    let err;
 
-function oneToTwo() {
-    mode++;
+    if (y > floorPos_y)
+        err = "Cannot be in ground.";
+
+    if (err) {
+        alert("Invalid bird.\nERROR : " + err);
+        return;
+    }
+    //changing that y value before passing because of the unique coordinate system for that class.
+    addElement([x, y], birds_Pos, Bird, birds);
+
 }
+
+function exportLevelData() {
+    let exp = {
+        size,
+        trees_x,
+        canyons_x,
+        coins_Pos,
+        birds_Pos,
+        platforms_Pos
+    };
+    saveJSON(exp, 'customLevel');
+}
+
+
+function showInstruction(s, h) {
+    stroke(0);
+    strokeWeight(2);
+    textSize(20);
+    fill(255);
+    textAlign(CENTER);
+    text(s, width / 2, (h || 200));
+    textAlign(RIGHT);
+    strokeWeight(0);
+    stroke(255);
+    fill(0);
+    text(`or press B to go back.`, width, height - 10);
+}
+
+// function oneToTwo() {
+//     mode++;
+// }
