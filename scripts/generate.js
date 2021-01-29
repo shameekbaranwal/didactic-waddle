@@ -431,6 +431,6 @@ function addCoin(x, y) {
 }
 
 
-function oneToTwo() {
-    mode++;
-}
+// function oneToTwo() {
+//     mode++;
+// }
