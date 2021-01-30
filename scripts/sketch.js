@@ -114,6 +114,7 @@ function setup() {
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
 	hr = (hr > 1) ? 1 : hr;
 	skyColour = [90 * hr, 145 * hr, 245 * hr];
+	customLevel = '';
 	isMuted = false;
 	levelCounter = 1;
 	currentLevel = levels[levelCounter];
@@ -152,6 +153,7 @@ function draw() {
 
 	//actual game
 	else if (mode === 1) {
+		showLevel();
 
 		scrollPos -= speed;
 
@@ -264,6 +266,7 @@ function draw() {
 
 	//game won/level completed animation mode, press ENTER to skip
 	else if (mode === 2) { //animation
+		showLevel();
 		push();
 		translate(-scrollPos, 0);
 		// mountainEnd.x;
@@ -283,6 +286,7 @@ function draw() {
 
 	//levelCompleted()
 	else if (mode === 3) {
+		showLevel();
 		levelCompleted();
 	}
 
@@ -564,6 +568,7 @@ function keyReleased() {
 				if (f) {
 					mode += 0.5;
 					currentLevel = customLevel;
+					levelCounter = 'Custom';
 					setLevel(currentLevel);
 					generateButton.hide();
 					char.y = floorPos_y - 200;
@@ -625,6 +630,15 @@ function drawMuteButton() {
 		fill(255);
 	rect(width - 60, height - 60, 20, 20);
 	triangle(width - 50, height - 50, width - 20, height - 80, width - 20, height - 20);
+}
+
+function showLevel() {
+	push();
+	fill(255);
+	stroke(0);
+	strokeWeight(3);
+	text ('Level : ' + levelCounter, width / 2, 30);
+	pop();
 }
 
 function mousePressed() {
