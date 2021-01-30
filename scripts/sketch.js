@@ -19,10 +19,10 @@ let char;
 let canv;
 const globalSpeed = 5;
 
-let currentLevel;
-let level1;
-let levels = [];
-let levelCounter;
+let currentLevel; //stores location data of the current level.
+// let level1; //
+let levels = []; //array of preset level data.
+let levelCounter; //stores the index of the current level being played. Stores 'CUSTOM' for dropped level.
 let trees_x = []; //array to store tree x positions.
 let canyons_x = []; //array to store canyon x positions.
 let coins_Pos = []; //array to store coins position (x, y).
@@ -65,7 +65,8 @@ function preload() {
 		null,
 		loadJSON('config/level-0.json'),
 		loadJSON('config/level-1.json'),
-		loadJSON('config/level-2.json')
+		loadJSON('config/level-2.json'),
+		loadJSON('config/level-3.json')
 	];
 	coinSound = loadSound('sfx/coin.wav');
 	charImgStanding = loadImage('images/idle.png');
@@ -108,10 +109,7 @@ function preload() {
 function setup() {
 	canv = createCanvas(1024, 576); //1024 x 576, 16:9
 	frameRate(60);
-	// generateButton = createButton();
-	// score = 0;
-	isLaunched = false;
-	mode = -1;
+	mode = -1; 
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
 	hr = (hr > 1) ? 1 : hr;
 	skyColour = [90 * hr, 145 * hr, 245 * hr];
@@ -124,23 +122,28 @@ function setup() {
 
 
 function draw() {
+	
+	// fill the sky
+	background(skyColour); 
 
-	background(skyColour); // fill the sky
-
+	// draw some green ground
 	noStroke();
 	fill(0, 155, 0);
-	rect(0, floorPos_y, width, height / 4); // draw some green ground
+	rect(0, floorPos_y, width, height / 4); 
 
 
-	// 	launch screen
+	// launch screen
 	if (mode === -1) {
 		launchScreen();
 	}
 
-	// option screen
+	// option/splash screen
 	else if (mode === 0) {
 		splashScreen();
-	} else if (mode === 0.5) {
+	} 
+	
+	//confirmation screen, triggers only when custom level data is dropped
+	else if (mode === 0.5) {
 		stroke(0);
 		strokeWeight(2);
 		textSize(50);
@@ -156,7 +159,7 @@ function draw() {
 	else if (mode === 1) {
 		showLevel();
 
-		scrollPos -= speed;
+		scrollPos -= speed; //speed changes based on character's motion OR side-scrolling
 
 		push();
 
@@ -164,7 +167,7 @@ function draw() {
 
 		// Draw clouds.
 		clouds.forEach((cloud) => {
-			if (onScreen(cloud, 'x', 100))
+			if (onScreen(cloud, 'x', 100)) //for optimization
 				cloud.show();
 		});
 
@@ -174,13 +177,13 @@ function draw() {
 
 		// Draw trees.
 		trees.forEach((tree) => {
-			if (onScreen(tree, 'x', 100))
+			if (onScreen(tree, 'x', 100)) //for optimization
 				tree.show();
 		});
 
 		// Draw canyons
 		canyons.forEach((canyon) => {
-			if (onScreen(canyon, 'x1', 100) || onScreen(canyon, 'x2', 100))
+			if (onScreen(canyon, 'x1', 100) || onScreen(canyon, 'x2', 100)) //for optimization
 				canyon.show();
 		});
 
@@ -188,10 +191,10 @@ function draw() {
 		for (let i = 0; i < coins_Pos.length; i++) {
 			if (coins[i] !== undefined) // since we will be devaring coins from array.
 			{
-				if (onScreen(coins[i], 'x', 20)) {
+				if (onScreen(coins[i], 'x', 20)) { //for optimization
 					coins[i].hasBeenCaught(charPosition);
 					coins[i].show();
-					if (coins[i].isFound) { //devaring coin from array to improve efficiency.
+					if (coins[i].isFound) { //splicing coin from array once it's collected.
 						if (!isMuted)
 							coinSound.play();
 						coins.splice(i, 1);
@@ -203,13 +206,13 @@ function draw() {
 
 		// Draw platforms
 		platforms.forEach((platform) => {
-			if (onScreen(platform, 'x1', 20) || onScreen(platform, 'x2', 20))
+			if (onScreen(platform, 'x1', 20) || onScreen(platform, 'x2', 20)) //for optimization
 				platform.show();
 		});
 
 		// Draw birds
 		birds.forEach((bird) => {
-			if (onScreen(bird, 'centerPos', 40)) {
+			if (onScreen(bird, 'centerPos', 40)) { //for optimization
 				bird.update();
 				bird.show();
 				if (bird.hit(charPosition, char))
@@ -222,9 +225,6 @@ function draw() {
 			gameOver();
 		}
 
-		//////// Game character logic ///////
-		// Logic to move
-
 		if (isFalling()) { //logic for character falling in canyon.
 			char.gravity = 0.7;
 		}
@@ -234,7 +234,6 @@ function draw() {
 
 		// Draw the game character - this must be last
 		char.show();
-
 
 
 
@@ -249,7 +248,7 @@ function draw() {
 
 		//in case the background needs to move in reverse, the char.updateX() function will
 		//change the value of char.returnSpeed accordingly, and the environment will 
-		//behave according to it. 
+		//scroll according to it. 
 		speed = char.returnSpeed;
 
 
@@ -265,12 +264,11 @@ function draw() {
 		}
 	}
 
-	//game won/level completed animation mode, press ENTER to skip
-	else if (mode === 2) { //animation
+	//level completed animation mode, press ENTER to skip
+	else if (mode === 2) { //small animation
 		showLevel();
 		push();
 		translate(-scrollPos, 0);
-		// mountainEnd.x;
 		mountainEnd.show();
 		trees.forEach((n) => n.show());
 		clouds.forEach((n) => n.show());
@@ -291,7 +289,7 @@ function draw() {
 		levelCompleted();
 	}
 
-	//game completed
+	//all preset levels exhausted => game completed
 	else if (mode === 4) {
 		youWin();
 	}
