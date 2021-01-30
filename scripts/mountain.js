@@ -8,6 +8,7 @@ class Mountain {
         this.leftMostPoint = this.x - 250;
         this.rightMostPoint = this.x + 250
     }
+    
 
     show() {
         push();

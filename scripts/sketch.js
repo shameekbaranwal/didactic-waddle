@@ -56,7 +56,7 @@ let mode; //alternative to boolean for controlling screen. Legend below.
 */
 
 function preload() {
-	level1 = loadJSON('config/level-1.json');
+	level1 = loadJSON('config/level-0.json');
 	coinSound = loadSound('sfx/coin.wav');
 	charImgStanding = loadImage('images/idle.png');
 	charImgsRunning = [
@@ -150,27 +150,26 @@ function draw() {
 		translate(-scrollPos, 0);
 
 		// Draw clouds.
-		for (let i = 0; i < cloudsNum; i++) {
-			///////////
-			if (onScreen(clouds[i], 'x', 100))
-				clouds[i].show();
-		}
+		clouds.forEach((cloud) => {
+			if (onScreen(cloud, 'x', 100))
+				cloud.show();
+		});
 
 		//Draw mountains.
 		mountainStart.show();
 		mountainEnd.show();
 
 		// Draw trees.
-		for (let i = 0; i < trees_x.length; i++) {
-			if (onScreen(trees[i], 'x', 100))
-				trees[i].show();
-		}
+		trees.forEach((tree) => {
+			if (onScreen(tree, 'x', 100))
+				tree.show();
+		});
 
 		// Draw canyons
-		for (let i = 0; i < canyons_x.length; i++) {
-			if (onScreen(canyons[i], 'x1', 100) || onScreen(canyons[i], 'x2', 100))
-				canyons[i].show();
-		}
+		canyons.forEach((canyon) => {
+			if (onScreen(canyon, 'x1', 100) || onScreen(canyon, 'x2', 100))
+				canyon.show();
+		});
 
 		// Draw coins
 		for (let i = 0; i < coins_Pos.length; i++) {
@@ -190,19 +189,20 @@ function draw() {
 		}
 
 		// Draw platforms
-		for (let i = 0; i < platforms_Pos.length; i++) {
-			platforms[i].show();
-		}
+		platforms.forEach((platform) => {
+			if (onScreen(platform, 'x1', 20) || onScreen(platform, 'x2', 20))
+				platform.show();
+		});
 
 		// Draw birds
-		for (let i = 0; i < birds.length; i++) {
-			if (onScreen(birds[i], 'centerPos', 40)) {
-				birds[i].update();
-				birds[i].show();
-				if (birds[i].hit(charPosition, char))
+		birds.forEach((bird) => {
+			if (onScreen(bird, 'centerPos', 40)) {
+				bird.update();
+				bird.show();
+				if (bird.hit(charPosition, char))
 					gameOver();
 			}
-		}
+		});
 
 
 		if (char.offScreen()) {
@@ -246,8 +246,33 @@ function draw() {
 
 		showScore();
 
-		if (charPosition >= endPos) //when character will enter mountain.
-			youWin();
+		if (charPosition >= endPos) { //when character will enter mountain.
+			// youWin();
+			mode++;
+		}
+	}
+
+	//game won/level completed
+	else if (mode === 2) { //animation
+		push();
+		translate(-scrollPos, 0);
+		// mountainEnd.x;
+		mountainEnd.show();
+		trees.forEach((n) => n.show());
+		clouds.forEach((n) => n.show());
+		birds.forEach((n) => n.show());
+		pop();
+		char.show();
+		char.y -= globalSpeed;
+		if (char.y < -5) {
+			mode++;
+		}
+	}
+
+	//youWin()
+	
+	if (mode === 3) {
+		youWin();
 	}
 
 	drawMuteButton();
@@ -316,7 +341,6 @@ function setLevel(level) {
 	// Initialise arrays of scenery objects.
 
 	//platforms
-	// arrayCopy(level['platforms_Pos'], platforms_Pos, level['platforms_Pos'].length);
 	platforms_Pos = [];
 	platforms = [];
 	platforms_Pos = level.platforms_Pos;
@@ -336,7 +360,6 @@ function setLevel(level) {
 	}
 
 	//trees
-	// arrayCopy(level['trees_x'], trees_x, level['trees_x'].length);
 	trees = [];
 	trees_x = [];
 	trees_x = level.trees_x;
@@ -346,7 +369,6 @@ function setLevel(level) {
 	}
 
 	//canyon
-	// arrayCopy(level['canyons_x'], canyons_x, level['canyons_x'].length);
 	canyons = [];
 	canyons_x = [];
 	canyons_x = level.canyons_x;
@@ -356,7 +378,6 @@ function setLevel(level) {
 	}
 
 	//coins
-	// arrayCopy(level['coins_Pos'], coins_Pos, level['coins_Pos'].length);
 	coins = [];
 	coins_Pos = [];
 	coins_Pos = level.coins_Pos;
@@ -366,7 +387,6 @@ function setLevel(level) {
 	}
 
 	//birds 
-	// arrayCopy(level['birds_Pos'], birds_Pos, level['birds_Pos'].length);
 	birds = [];
 	birds_Pos = [];
 	birds_Pos = level.birds_Pos;
@@ -383,7 +403,7 @@ function youWin() {
 	fill(77, 44, 0)
 	stroke(0);
 	strokeWeight(1);
-	triangle(char.x - 80, floorPos_y, char.x + 80, floorPos_y, char.x, floorPos_y - 100);
+	// triangle(char.x - 80, floorPos_y, char.x + 80, floorPos_y, char.x, floorPos_y - 100);
 	push();
 	fill(255);
 	strokeWeight(2);
@@ -426,7 +446,7 @@ function showScore() {
 //for motion of character in scene 
 function keyPressed() {
 
-	if ((key === 'A' || keyCode === 37 || key === 'a') && mode > 0) {
+	if ((key === 'A' || keyCode === 37 || key === 'a') && mode > 0 && mode !== 2) {
 		if (!char.isAtLeftEdge()) {
 			char.moveLeft();
 			char.moveOn = true;
@@ -434,7 +454,7 @@ function keyPressed() {
 			char.moveOn = false;
 		}
 	} else
-	if ((key === 'D' || keyCode === 39 || key === 'd') && mode > 0) {
+	if ((key === 'D' || keyCode === 39 || key === 'd') && mode > 0 && mode !== 2) {
 		if (!char.isAtRightEdge()) {
 			if (char.isAtLeftEdge)
 				char.moveOn = true;
@@ -468,10 +488,11 @@ function keyReleased() {
 		char.moveOn = false;
 	}
 
-	if ((key === 'R' || key === 'r') && mode > 0) {
+	if ((key === 'R' || key === 'r') && mode > 0 && mode !== 2) {
 		//to reset the canvas.
 		setLevel(currentLevel);
 		score = 0;
+		mode = 1;
 		loop();
 	}
 
@@ -514,6 +535,8 @@ function keyReleased() {
 			isLaunched = true;
 			scrollPos = 0;
 			textFont('Georgia');
+		} else if (mode === 2) {
+			char.y = -20;
 		}
 	}
 

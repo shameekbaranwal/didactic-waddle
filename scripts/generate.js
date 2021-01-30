@@ -213,6 +213,8 @@ and drag and drop it on the game, available here.`);
         fieldButton.mousePressed(() => {
             window.location = '/';
         });
+        fieldButton.position (width / 2 - 80, height / 2 - 20);
+        fieldButton.size(160, 40);
         noLoop();
     }
 
