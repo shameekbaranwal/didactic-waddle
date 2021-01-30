@@ -125,7 +125,7 @@ level generator`, width / 2, height / 2 - 50);
         fieldButton.mousePressed(() => {
             temp = int(inputField.value());
         });
-        showInstruction('Enter a valid size for the level (between 2000-20000)')
+        showInstruction('Enter a valid size for the level (between 2000-20000)', false)
         if (temp != undefined && temp !== NaN) {
             if (temp >= 2000 && temp <= 20000) {
                 zeroToOne();
@@ -147,7 +147,7 @@ level generator`, width / 2, height / 2 - 50);
             fill(200, 0, 0);
             rect(x1, floorPos_y, mouseX - x1, height - floorPos_y);
             pop();
-            showInstruction('Click again to finish drawing the canyon.');
+            showInstruction('Click again to finish drawing the canyon.', true);
         } else {
             showInstruction(`Click anywhere to start drawing a canyon
 
@@ -161,7 +161,7 @@ or press ENTER to continue.`);
     else if (mode === 2) {
         showInstruction(`Click anywhere to place a tree on the ground
 
-or press ENTER to continue.`);
+or press ENTER to continue.`, true);
     }
 
 
@@ -172,11 +172,11 @@ or press ENTER to continue.`);
         if (flag) {
             fill(200, 0, 0);
             rect(x1, y1, mouseX - x1, 15);
-            showInstruction(`Click anywhere to finish drawing this platform.`);
+            showInstruction(`Click anywhere to finish drawing this platform.`, true);
         } else {
             showInstruction(`Click anywhere to start drawing a platform
 
-or press ENTER to continue.`);
+or press ENTER to continue.`, true);
         }
     }
 
@@ -187,7 +187,7 @@ or press ENTER to continue.`);
     else if (mode === 4) {
         showInstruction(`Click anywhere to add an animated collectable
         
-or press ENTER to continue.`);
+or press ENTER to continue.`, true);
     }
 
 
@@ -197,23 +197,21 @@ or press ENTER to continue.`);
     else if (mode === 5) {
         showInstruction(`Click anywhere to add a waddling bird
         
-or press ENTER to continue.`);
+or press ENTER to continue.`, true);
     }
 
 
     //confirmation
     else if (mode === 6) {
-        showInstruction(`Press ENTER to confirm selections.`);
-    }
-
-    else if (mode === 7) {
+        showInstruction(`Press ENTER to confirm selections.`, true);
+    } else if (mode === 7) {
         showInstruction(`Now download the ejected JSON file, 
-and drag and drop it on the game, available here.`);
+and drag and drop it on the game, available here.`, false);
         fieldButton = createButton('didactic-waddle');
         fieldButton.mousePressed(() => {
             window.location = '/';
         });
-        fieldButton.position (width / 2 - 80, height / 2 - 20);
+        fieldButton.position(width / 2 - 80, height / 2 - 20);
         fieldButton.size(160, 40);
         noLoop();
     }
@@ -343,8 +341,8 @@ function keyPressed() {
     if (key === 'b' || key === 'B') {
         if (mode === 1)
             flag = false;
-            if (mode > 1) { 
-                if (!flag) {
+        if (mode > 1) {
+            if (!flag) {
                 mode--;
             }
         }
@@ -541,12 +539,13 @@ function showInstruction(s, h) {
     textSize(20);
     fill(255);
     textAlign(CENTER);
-    text(s, width / 2, (h || 200));
+    text(s, width / 2, 200);
     textAlign(RIGHT);
     strokeWeight(0);
     stroke(255);
     fill(0);
-    text(`or press B to go back.`, width, height - 10);
+    if (h)
+        text(`or press B to go back.`, width, height - 10);
 }
 
 // function oneToTwo() {
