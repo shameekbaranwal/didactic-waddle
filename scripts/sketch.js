@@ -21,6 +21,8 @@ const globalSpeed = 5;
 
 let currentLevel;
 let level1;
+let levels = [];
+let levelCounter;
 let trees_x = []; //array to store tree x positions.
 let canyons_x = []; //array to store canyon x positions.
 let coins_Pos = []; //array to store coins position (x, y).
@@ -49,14 +51,21 @@ let isLaunched; //to store boolean whether game has launched.
 let mode; //alternative to boolean for controlling screen. Legend below.
 /*
 	-1: launch screen, equiv to isLaunched = false.
-	0: splash screen, ENTER to continue, button click to go to generate.html, drag/drop to play THAT level
+	0: splash/option screen, ENTER to continue, button click to go to generate.html, drag/drop to play THAT level
+	0.5: if chose custom level, then this confirmation screen.
 	1: game
-	2: levelCompleted
-	3: levelLost
+	2: reached end mountain, level completion animation
+	3: level completed message, press ENTER for next level
+	4: all levels completed, game over, press button to go to level generator to create custom levels and play.
 */
 
 function preload() {
-	level1 = loadJSON('config/level-0.json');
+	// level1 = loadJSON('config/level-0.json');
+	levels = [
+		null,
+		loadJSON('config/level-0.json'),
+		loadJSON('config/level-2.json')
+	];
 	coinSound = loadSound('sfx/coin.wav');
 	charImgStanding = loadImage('images/idle.png');
 	charImgsRunning = [
@@ -99,14 +108,15 @@ function setup() {
 	canv = createCanvas(1024, 576); //1024 x 576, 16:9
 	frameRate(60);
 	// generateButton = createButton();
-	score = 0;
+	// score = 0;
 	isLaunched = false;
 	mode = -1;
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
 	hr = (hr > 1) ? 1 : hr;
 	skyColour = [90 * hr, 145 * hr, 245 * hr];
 	isMuted = false;
-	currentLevel = level1;
+	levelCounter = 1;
+	currentLevel = levels[levelCounter];
 	setLevel(currentLevel);
 }
 
@@ -247,12 +257,12 @@ function draw() {
 		showScore();
 
 		if (charPosition >= endPos) { //when character will enter mountain.
-			// youWin();
+			// levelCompleted();
 			mode++;
 		}
 	}
 
-	//game won/level completed
+	//game won/level completed animation mode, press ENTER to skip
 	else if (mode === 2) { //animation
 		push();
 		translate(-scrollPos, 0);
@@ -261,17 +271,23 @@ function draw() {
 		trees.forEach((n) => n.show());
 		clouds.forEach((n) => n.show());
 		birds.forEach((n) => n.show());
+		canyons.forEach((n) => n.show());
+		platforms.forEach((n) => n.show());
 		pop();
 		char.show();
-		char.y -= globalSpeed;
+		char.y -= 3 * globalSpeed;
 		if (char.y < -5) {
 			mode++;
 		}
 	}
 
-	//youWin()
-	
-	if (mode === 3) {
+	//levelCompleted()
+	else if (mode === 3) {
+		levelCompleted();
+	}
+
+	//game completed
+	else if (mode === 4) {
 		youWin();
 	}
 
@@ -318,9 +334,16 @@ function launchScreen() {
 }
 
 //function to set the environment for level 1. It is seperated out, so more levels can be added
-//using the youWin() function, by setting new values for all the variables set here.
+//using the levelCompleted() function, by setting new values for all the variables set here.
 
 function setLevel(level) {
+
+	if (level == undefined) {
+		mode = 4;
+		return;
+		// noLoop();
+	}
+
 	floorPos_y = height * 3 / 4; //this value will be used throughout the code.
 	gameChar_x = 130;
 	gameChar_y = floorPos_y;
@@ -334,6 +357,7 @@ function setLevel(level) {
 	endPos = level.size;
 	scrollPos = 0;
 	speed = 0;
+	score = 0;
 	charPosition = char.x; //this variable will contain the distance of the character wrt origin, we use this
 	//we use charPosition to keep track of how many pixels character has moved in total.
 
@@ -397,12 +421,12 @@ function setLevel(level) {
 }
 
 //function executes whenever you reach the end mountain.
-function youWin() {
+function levelCompleted() {
 	//the character will enter the mountain in this triangle upon winning the game.
 	noLoop();
-	fill(77, 44, 0)
-	stroke(0);
-	strokeWeight(1);
+	// fill(77, 44, 0)
+	// stroke(0);
+	// strokeWeight(1);
 	// triangle(char.x - 80, floorPos_y, char.x + 80, floorPos_y, char.x, floorPos_y - 100);
 	push();
 	fill(255);
@@ -410,10 +434,37 @@ function youWin() {
 	textSize(40);
 	textAlign(CENTER);
 	text(
-		`CONGRATULATIONS, YOU WIN!
-	YOU SCORED ${score} / ${coins_Pos.length} !
-	Press R to play again.`, width / 2, height / 2);
+		`LEVEL COMPLETED!
+	YOU SCORED ${score} / ${coins_Pos.length} !`, width / 2, height / 2);
+	textSize(20);
+	if (currentLevel === customLevel) {
+		text(`press R to replay this level.`, width / 2, floorPos_y + 40);
+	} else {
+		text(`press R to replay this level
+or
+press ENTER to go to the next level.`, width / 2, floorPos_y + 40);
+	}
 	pop();
+}
+
+//function executes when all levels have been exhausted. 
+function youWin() {
+	noLoop();
+	push();
+	fill(255);
+	strokeWeight(2);
+	textSize(40);
+	textAlign(CENTER);
+	text(
+		`CONGRATULATIONS!
+YOU HAVE FINISHED ALL PRESET LEVELS.`, width / 2, height / 2 - 30);
+
+	textSize(20);
+	text(`Visit the level generator engine to create custom levels.`, width / 2, floorPos_y + 40);
+	generateButton = createButton('Go to level generator');
+	generateButton.position(width / 2 - 50, floorPos_y + 70);
+	generateButton.size(100, 50);
+	generateButton.mousePressed(() => window.location = '/generate.html');
 }
 
 //function executes whenever game ends by falling off or flying away.
@@ -488,7 +539,7 @@ function keyReleased() {
 		char.moveOn = false;
 	}
 
-	if ((key === 'R' || key === 'r') && mode > 0 && mode !== 2) {
+	if ((key === 'R' || key === 'r') && mode > 0 && mode !== 2 && mode !== 4) {
 		//to reset the canvas.
 		setLevel(currentLevel);
 		score = 0;
@@ -519,7 +570,7 @@ function keyReleased() {
 					char.isJumping = true;
 					isLaunched = true;
 					scrollPos = 0;
-					textFont('Georgia');
+					// textFont('Georgia');
 				} else {
 					alert("Invalid file.");
 				}
@@ -534,9 +585,16 @@ function keyReleased() {
 			char.isJumping = true;
 			isLaunched = true;
 			scrollPos = 0;
-			textFont('Georgia');
+			// textFont('Georgia');
 		} else if (mode === 2) {
 			char.y = -20;
+		} else if (mode === 3) {
+			if (currentLevel !== customLevel) {
+				currentLevel = levels[++levelCounter];
+				mode = 1;
+				setLevel(currentLevel);
+				loop();
+			}
 		}
 	}
 
@@ -595,12 +653,11 @@ available here :`, width / 2, 200);
 
 function verifyLevel(file) {
 	return (
-		file.size &&
-		file.platforms_Pos &&
-		file.trees_x &&
-		file.birds_Pos &&
-		file.canyons_x &&
-		file.platforms_Pos &&
-		file.coins_Pos
+		((file.size) &&
+			(file.coins_Pos)) ||
+		(file.platforms_Pos ||
+			file.trees_x ||
+			file.birds_Pos ||
+			file.canyons_x)
 	)
 }
