@@ -64,6 +64,7 @@ function preload() {
 	levels = [
 		null,
 		loadJSON('config/level-0.json'),
+		loadJSON('config/level-1.json'),
 		loadJSON('config/level-2.json')
 	];
 	coinSound = loadSound('sfx/coin.wav');
