@@ -32,7 +32,7 @@ class Platform {
         // rect(this.x1, this.y1, this.w, this.h);
         fill(200, 0, 0);
         rectMode(CENTER);
-        rect(this.x, this.y, this.w, this.h);
+        rect(this.x, this.y, this.w, this.h, 30);
     }
 
 }
