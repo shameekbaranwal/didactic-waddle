@@ -1,5 +1,5 @@
 
-# [didactic waddle](https://didactic-waddle-level.netlify.app) #
+# [didactic waddle](https://didactic-waddle.netlify.app) #
 author: @shameekbaranwal
 
 A simple 2D web game project designed using the p5.js framework, that involves a character traversing from mountain to mountain in a two-dimensional world full of background elements like clouds, trees, birds, canyons, platforms, and collectable coins. The game makes use of the side-scrolling technique, which means that upon reaching the end of the visible world, the background will begin to scroll in the opposite direction, giving the illusion of further motion. Apart from the actual game, a level-generating engine is available, using which a user can generate custom levels with manually positioned elements, and then `drag and drop` the generated level data file on the game and play it instantly.
@@ -53,4 +53,4 @@ If you've made any challenging level that you'd like to be included in the prese
 
 ![](images/gameplay%20ss.png)
 
-You can check out the latest release [`here`](https://didactic-waddle-level.netlify.app)
+You can check out the latest release [`here`](https://didactic-waddle.netlify.app)
