@@ -13,7 +13,7 @@ class Character {
         this.gravity = 1; //gravity
         this.isJumping = true; //because the character starts off by jumping off the first mountain and landing.
         this.isPlummeting = false;
-        this.offSet = 80;
+        this.offSet = 190;
         this.returnSpeed = 0; //\\this value will control the reverse movement of bg items
         this.movingRight = true;
         this.img = charImgStanding;
@@ -104,7 +104,7 @@ class Character {
     }
 
     isNotAtLeftEnd() {
-        return ((charPosition > gameChar_x));
+        return ((charPosition >= this.offSet + 40));
     }
 
     moveRight() {
