@@ -62,11 +62,13 @@ let mode; //alternative to boolean for controlling screen. Legend below.
 function preload() {
 	// level1 = loadJSON('config/level-0.json');
 	levels = [
-		null,
+		// null,
 		loadJSON('config/level-0.json'),
 		loadJSON('config/level-1.json'),
 		loadJSON('config/level-2.json'),
-		loadJSON('config/level-3.json')
+		loadJSON('config/level-3.json'),
+		loadJSON('config/level-4.json'),
+		loadJSON('config/level-5.json')
 	];
 	coinSound = loadSound('sfx/coin.wav');
 	charImgStanding = loadImage('images/idle.png');
@@ -109,7 +111,7 @@ function preload() {
 function setup() {
 	canv = createCanvas(1024, 576); //1024 x 576, 16:9
 	frameRate(60);
-	mode = -1; 
+	mode = -1;
 	hr = (min(hour(), 24 - hour()) + 1) / 12; //the lower this will be, the darker the sky will be
 	hr = (hr > 1) ? 1 : hr;
 	skyColour = [90 * hr, 145 * hr, 245 * hr];
@@ -122,14 +124,14 @@ function setup() {
 
 
 function draw() {
-	
+
 	// fill the sky
-	background(skyColour); 
+	background(skyColour);
 
 	// draw some green ground
 	noStroke();
 	fill(0, 155, 0);
-	rect(0, floorPos_y, width, height / 4); 
+	rect(0, floorPos_y, width, height / 4);
 
 
 	// launch screen
@@ -140,8 +142,8 @@ function draw() {
 	// option/splash screen
 	else if (mode === 0) {
 		splashScreen();
-	} 
-	
+	}
+
 	//confirmation screen, triggers only when custom level data is dropped
 	else if (mode === 0.5) {
 		stroke(0);
@@ -353,7 +355,7 @@ function setLevel(level) {
 
 	//initialising character
 	char = null;
-	char = new Character(gameChar_x, gameChar_y);
+	char = new Character(240, gameChar_y);
 
 	// Variables to control the background scrolling.
 	endPos = null;
@@ -636,7 +638,7 @@ function showLevel() {
 	fill(255);
 	stroke(0);
 	strokeWeight(3);
-	text ('Level : ' + levelCounter, width / 2, 30);
+	text('Level : ' + levelCounter, width / 2, 30);
 	pop();
 }
 
@@ -668,7 +670,8 @@ function verifyLevel(file) {
 	return (
 		((file.size) &&
 			(file.coins_Pos)) ||
-		(file.platforms_Pos ||
+		(
+			file.platforms_Pos ||
 			file.trees_x ||
 			file.birds_Pos ||
 			file.canyons_x)
