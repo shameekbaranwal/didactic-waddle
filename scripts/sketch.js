@@ -60,15 +60,14 @@ let mode; //alternative to boolean for controlling screen. Legend below.
 */
 
 function preload() {
-	// level1 = loadJSON('config/level-0.json');
 	levels = [
-		// null,
 		loadJSON('config/level-0.json'),
 		loadJSON('config/level-1.json'),
 		loadJSON('config/level-2.json'),
 		loadJSON('config/level-3.json'),
 		loadJSON('config/level-4.json'),
 		loadJSON('config/level-5.json')
+		//add more levels here.
 	];
 	coinSound = loadSound('sfx/coin.wav');
 	charImgStanding = loadImage('images/idle.png');
@@ -550,6 +549,10 @@ function keyReleased() {
 		score = 0;
 		mode = 1;
 		loop();
+	}
+
+	if ((key === 'S' || key === 's')) {
+		save('canvas.png');
 	}
 
 	if (keyCode === 13) {
