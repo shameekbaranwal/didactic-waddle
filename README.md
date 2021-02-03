@@ -16,7 +16,7 @@ At the beginning of every level, the player will spawn in front of a mountain, a
 > ### play the game ###
 The player can use the `left` and `right` `arrow keys` to control the horizontal motion of the character, and the `spacebar` to jump. Additionally, the `M` key can be used to mute the sound effects, and the `R` key to restart the current level. At the end of every level, pressing the `ENTER` key will take you to the next one, if available.
 
-> ### create levels using the GUI Engine ###
+> ### create levels using the [GUI Engine](https://didactic-waddle.netlify.app/generate.html) ### 
 Upon entering the game, the player will have the option to play the preset levels, or to go to the level generator to create custom levels, or to `drop` a pre-made custom level data file. Click on the button, and it'll redirect you to the engine. Once there, enter the size of your level in pixels (which will correspond to the distance between the two mountains). Once a valid value is entered, the clouds and mountains and ground will spawn. You can use the `left` and `right` `arrow keys` to scroll across the level. Now you'll have entered the mode - 
 
 * `1` : Canyons. Click anywhere on the canvas to start drawing a canyon on the ground based on the X co-ordinate of your cursor, and click again at some valid distance to finish drawing the canyons. Repeat this process till you've reached the desired number of canyons, then press `ENTER` to move on to the next mode -
