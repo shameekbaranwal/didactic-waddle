@@ -6,7 +6,7 @@ class Bird {
         this.centerPos = pos[0]; //the bird is oscillating/waddling about this center with radius r.
         this.x = 0;
         this.y = pos[1];
-        this.r = 25; //radius of waddling motion.
+        this.r = pos[2] || 25;//radius of waddling motion.
         this.w = 60;
         this.h = 20;
         this.speed = 0; //this speed for the screen scrolling
