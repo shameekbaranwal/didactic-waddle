@@ -20,7 +20,7 @@ let canv;
 const globalSpeed = 5;
 
 let currentLevel; //stores location data of the current level.
-// let level1; //
+let lives;
 let levels = []; //array of preset level data.
 let levelCounter; //stores the index of the current level being played. Stores 'CUSTOM' for dropped level.
 let trees_x = []; //array to store tree x positions.
@@ -300,9 +300,7 @@ function draw() {
 
 
 /*
-
-functions defined to do things in a more organised way
-
+background functions
 */
 
 function launchScreen() {

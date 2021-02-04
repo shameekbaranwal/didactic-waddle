@@ -96,7 +96,7 @@ class Character {
     //for x direction
 
     isAtRightEdge() {
-        return ((this.x + this.w / 2) >= width - this.offSet);
+        return ((this.x + this.w / 2) >= width / 2 + 100);
     }
 
     isAtLeftEdge() {
@@ -104,7 +104,11 @@ class Character {
     }
 
     isNotAtLeftEnd() {
-        return ((charPosition >= this.offSet + 40));
+        return ((charPosition >= this.offSet));
+    }
+
+    isNotAtRightEnd() {
+        return ((charPosition <= endPos));
     }
 
     moveRight() {
@@ -124,12 +128,23 @@ class Character {
     }
 
     updateX() {
-        if ((this.isAtRightEdge()) && this.moveOn) {
+        if (this.isNotAtRightEnd()) {
+            if ((this.isAtRightEdge()) && this.moveOn) {
+                this.xspeed = 0;
+                this.returnSpeed = -globalSpeed;
+            }
+        } else {
+            this.returnSpeed = 0;
             this.xspeed = 0;
-            this.returnSpeed = -globalSpeed;
-        } else if (this.isAtLeftEdge() && this.isNotAtLeftEnd() && this.moveOn) {
+        }
+        if (this.isNotAtLeftEnd()) {
+            if (this.isAtLeftEdge() && this.moveOn) {
+                this.xspeed = 0;
+                this.returnSpeed = globalSpeed;
+            }
+        } else {
+            this.returnSpeed = 0;
             this.xspeed = 0;
-            this.returnSpeed = globalSpeed;
         }
         this.x += this.xspeed;
     }
@@ -168,8 +183,7 @@ class Character {
                 this.yspeed = 0;
                 this.gravity = 0;
             }
-        } 
-        else if (this.y < floorPos_y ) {
+        } else if (this.y < floorPos_y) {
             if (!this.isJumping) {
                 this.isJumping = true;
                 this.gravity = 0.7;
@@ -182,7 +196,7 @@ class Character {
                         this.flag = true;
                     }
                 }
-            } 
+            }
         }
 
 
