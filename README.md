@@ -6,7 +6,7 @@ A simple 2D web game project designed using the p5.js framework, that involves a
 
 ## Gameplay : ##
 
-At the beginning of every level, the player will spawn in front of a mountain, and he must avoid hitting birds and falling into canyons and make clever use of the available platforms to collect as many coins as possible, and reach the second mountain, where the level will end, and there will be an option to proceed to the next. Currently, the game has `5` preset levels, but the player can make use of the GUI level generator to create as many levels as they like. Instructions on how to create levels available ahead.
+At the beginning of every level, the player will spawn in front of a mountain, and he must avoid hitting birds and falling into canyons and make clever use of the available platforms to collect as many coins as possible, and reach the second mountain, where the level will end, and there will be an option to proceed to the next. Currently, the game has `6` preset levels, but the player can make use of the GUI level generator to create as many levels as they like. Instructions on how to create levels available ahead.
 
  **If you create sufficiently challenging levels, consider contributing those level JSON files to the game by making a pull-request. Detailed instructions on how to contribute available ahead.** 
 
@@ -40,9 +40,9 @@ If you've made any challenging level that you'd like to be included in the prese
 
    * Download the JSON file from the level generator.
    * Fork the repository to your local machine.
-   * Rename the file as `level-6.json`, and paste it in `/config/`
+   * Rename the file as `level-7.json`, and paste it in `/config/`
    * Next, open the `/scripts/sketch.js` file, scroll to the function preload(), and paste the following line of code 
-        `loadJSON('config/level-6.json');`
+        `loadJSON('config/level-7.json');`
     here: 
 
 ![](images/loadJSON%20ss.png)

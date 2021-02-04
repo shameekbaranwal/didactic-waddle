@@ -66,6 +66,7 @@ function preload() {
 		loadJSON('config/level-2.json'),
 		loadJSON('config/level-3.json'),
 		loadJSON('config/level-4.json'),
+		loadJSON('config/level-6.json'),
 		loadJSON('config/level-5.json')
 		//add more levels here.
 	];
