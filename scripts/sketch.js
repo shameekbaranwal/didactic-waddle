@@ -435,6 +435,7 @@ function levelCompleted() {
 	noLoop();
 	push();
 	levelScores[levelCounter] = score;
+	combinedScore = 0;
 	levelScores.forEach(score => combinedScore += score);
 	fill(255);
 	strokeWeight(2);
