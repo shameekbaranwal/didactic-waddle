@@ -20,7 +20,6 @@ let canv;
 const globalSpeed = 5;
 
 let currentLevel; //stores location data of the current level.
-let lives;
 let levels = []; //array of preset level data.
 let levelCounter; //stores the index of the current level being played. Stores 'CUSTOM' for dropped level.
 let trees_x = []; //array to store tree x positions.
@@ -38,6 +37,8 @@ let birds = []; //array of instances of Bird class.
 let platforms = []; //array of instances of Platform class.
 let cloudsNum; //to store the fixed amount of fixed clouds based on level size.
 let score; //to store number of collectibles collected.
+let levelScores = []; //to store the final score for each level.
+let combinedScore;
 let scrollPos; //to store scrolling distance.
 let endPos; //to store the ending position, where the mountain will be situated.
 let skyColour; //to store sky (and improvised canyon) colour based on current time.
@@ -48,6 +49,7 @@ let charImgsJumping; //array of images for jumping animation.
 let charImgStanding; //array of images for standing character.
 let generateButton; //button to redirect to level creating page.
 let isLaunched; //to store boolean whether game has launched.
+let lives; //to store how many lives the player has left. 
 let mode; //alternative to boolean for controlling screen. Legend below.
 /*
 	-1: launch screen, equiv to isLaunched = false.
@@ -116,7 +118,10 @@ function setup() {
 	hr = (hr > 1) ? 1 : hr;
 	skyColour = [90 * hr, 145 * hr, 245 * hr];
 	customLevel = '';
+	levelScores[0] = 0;
+	combinedScore = 0;
 	isMuted = false;
+	lives = 3;
 	levelCounter = 1;
 	currentLevel = levels[levelCounter];
 	setLevel(currentLevel);
@@ -259,6 +264,7 @@ function draw() {
 
 
 		showScore();
+		showLives();
 
 		if (charPosition >= endPos) { //when character will enter mountain.
 			// levelCompleted();
@@ -427,11 +433,9 @@ function setLevel(level) {
 function levelCompleted() {
 	//the character will enter the mountain in this triangle upon winning the game.
 	noLoop();
-	// fill(77, 44, 0)
-	// stroke(0);
-	// strokeWeight(1);
-	// triangle(char.x - 80, floorPos_y, char.x + 80, floorPos_y, char.x, floorPos_y - 100);
 	push();
+	levelScores[levelCounter] = score;
+	levelScores.forEach(score => combinedScore += score);
 	fill(255);
 	strokeWeight(2);
 	textSize(40);
@@ -472,6 +476,8 @@ YOU HAVE FINISHED ALL PRESET LEVELS.`, width / 2, height / 2 - 30);
 
 //function executes whenever game ends by falling off or flying away.
 function gameOver() {
+	mode = 2.5;
+	// lives--;
 	noLoop();
 	push();
 	stroke(0);
@@ -479,21 +485,46 @@ function gameOver() {
 	translate(scrollPos, 0);
 	textAlign(CENTER);
 	fill(255);
-	textSize(70);
+	textSize(60);
 	text(
-		`You lost.
-	PRESS R TO RESTART!`, width / 2, height / 2);
+		`You lost.`, width / 2, height / 2);
+	textSize(40);
+	if (lives < 0) {
+		text(`No lives left.
+press R to restart the game.`, width / 2, height / 2 + 60);
+	} else {
+		text(`${--lives} ${lives===1?'life':'lives'} left.
+press R to restart the level.`, width / 2, height / 2 + 60);
+	}
 	pop();
+}
+
+function resetLives() {
+	lives = 3;
+	mode = 1;
+	levelCounter = 1;
+	currentLevel = levels[levelCounter];
+	levelScores = [0];
+	combinedScore = 0;
+}
+
+function showLives() {
+	for (let i = 0; i < lives; i++)
+		image(charImgStanding, width - (i + 1) * 40, 10, 30, 45);
 }
 
 function showScore() {
 	push();
-	textSize(40);
+	textSize(30);
 	textAlign(LEFT);
-	fill(255);
-	stroke(0);
-	strokeWeight(2);
-	text("SCORE: " + score, 30, 50);
+	fill(200);
+	stroke(100);
+	// fill(0);
+	// stroke(255);
+	strokeWeight(1.5);
+	text("Score: " + score, 30, 30);
+	textSize(30);
+	text("Total: " + (combinedScore + score), 30, 60);
 	pop();
 }
 
@@ -543,6 +574,11 @@ function keyReleased() {
 	}
 
 	if ((key === 'R' || key === 'r') && mode > 0 && mode !== 2 && mode !== 4) {
+		if (lives === 0) {
+			if (mode === 2.5 || mode === 3) {
+				resetLives();
+			}
+		}
 		//to reset the canvas.
 		setLevel(currentLevel);
 		score = 0;
