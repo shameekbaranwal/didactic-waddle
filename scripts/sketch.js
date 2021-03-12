@@ -478,7 +478,6 @@ YOU HAVE FINISHED ALL PRESET LEVELS.`, width / 2, height / 2 - 30);
 //function executes whenever game ends by falling off or flying away.
 function gameOver() {
 	mode = 2.5;
-	// lives--;
 	noLoop();
 	push();
 	stroke(0);
@@ -490,12 +489,9 @@ function gameOver() {
 	text(
 		`You lost.`, width / 2, height / 2);
 	textSize(40);
-	if (lives < 0) {
-		text(`No lives left.
-press R to restart the game.`, width / 2, height / 2 + 60);
-	} else {
+	if (lives > 0) {
 		text(`${--lives} ${lives===1?'life':'lives'} left.
-press R to restart the level.`, width / 2, height / 2 + 60);
+press R to restart the ${lives===0?'game':'level'}.`, width / 2, height / 2 + 60);
 	}
 	pop();
 }
